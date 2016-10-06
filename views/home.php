@@ -1,0 +1,1 @@
+<a href="/signup">注册</a>

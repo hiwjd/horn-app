@@ -1,0 +1,12 @@
+{
+    "require": {
+        "klein/klein": "^2.1",
+        "monolog/monolog": "^1.21",
+        "guzzlehttp/guzzle": "~6.0",
+        "hashids/hashids": "^1.0",
+        "gregwar/captcha": "1.*"
+    },
+    "autoload": {
+        "psr-4": {"Horn\\": "horn/"}
+    }
+}
