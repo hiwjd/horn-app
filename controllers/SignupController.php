@@ -2,6 +2,8 @@
 namespace Controller;
 
 use Slim\Container as ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
 use Horn\Staff;
 use Horn\CaptachType;
@@ -18,7 +20,7 @@ class SignupController {
     }
 
     // 发送激活邮件
-    public function signup_email($req, $rsp, $args) {
+    public function signup_email(Request $req, Response $rsp, $args) {
         $captcha = $req->getParam("captcha");
         if(!Util::checkCaptcha(CaptachType::SIGNUP_EMAIL, $captcha)) {
             throw new WrongArgException("验证码错误");
@@ -51,13 +53,15 @@ class SignupController {
     }
 
     // 确认邮件
-    public function confirm($req, $rsp, $args) {
-        $s = $req->getParam("s");
-        return $rsp->getBody()->write($s);
+    public function confirm(Request $req, Response $rsp, $args) {
+        $token = $req->getParam("s");
+        $email = $this->ci->staff->confirmEmail($token);
+
+        return $rsp->withRedirect("/confirm?email=$email");
     }
 
     // 注册
-    public function signup($req, $rsp, $args) {
+    public function signup(Request $req, Response $rsp, $args) {
         $this->ci->logger->info("signup");
         $captcha = $req->getParam("captcha");
         if(!Util::checkCaptcha(CaptachType::SIGNUP, $captcha)) {

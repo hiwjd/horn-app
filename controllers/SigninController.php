@@ -2,6 +2,8 @@
 namespace Controller;
 
 use Slim\Container as ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
 use Horn\Staff;
 use Horn\CaptachType;
@@ -17,7 +19,7 @@ class SigninController {
         $this->ci = $ci;
     }
 
-    public function signin($req, $rsp, $args) {
+    public function signin(Request $req, Response $rsp, $args) {
         $captcha = $req->getParam("captcha");
         if(!Util::checkCaptcha(CaptachType::SIGNIN, $captcha)) {
             throw new WrongArgException("验证码错误");

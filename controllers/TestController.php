@@ -5,22 +5,20 @@ use Slim\Container as ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
-use Horn\Staff;
 use Horn\CaptachType;
-use Horn\Exception;
 
-class SignoutController {
+class TestController {
     protected $ci;
 
     public function __construct(ContainerInterface $ci) {
         $this->ci = $ci;
     }
 
-    public function signout(Request $req, Response $rsp, $args) {
-        if(isset($_SESSION['user'])) {
-            unset($_SESSION['user']);
-        }
+    public function abc(Request $req, Response $rsp, $args) {
+        //$_SESSION["name"] = "abc";
+        $input = file_get_contents("php://input");
+        $this->ci->logger->info("<abc> $input");
 
-        return $rsp->withJson(Util::BeJson('登出', 0));
+        return $rsp->getBody()->write($input."\r\n");
     }
 }

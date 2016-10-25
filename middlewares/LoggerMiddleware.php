@@ -1,11 +1,15 @@
 <?php
 namespace Middleware;
 
+use Slim\Container as ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+
 class LoggerMiddleware {
 
     protected $ci;
 
-    public function __construct($ci) {
+    public function __construct(ContainerInterface $ci) {
         $this->ci = $ci;
     }
 
@@ -18,11 +22,9 @@ class LoggerMiddleware {
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function __invoke($req, $rsp, $next) {
-        $this->ci->logger->info("aaaaaa=====");
-        //$rsp->getBody()->write('BEFORE');
+    public function __invoke(Request $req, Response $rsp, callable $next) {
+        $this->ci->logger->info("Method[".$req->getMethod()."] Url[".$req->getUri()."]");
         $rsp = $next($req, $rsp);
-        //$rsp->getBody()->write('AFTER');
 
         return $rsp;
     }

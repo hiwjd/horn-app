@@ -1,6 +1,8 @@
 <?php
 namespace Horn;
 
+use Psr\Log\LoggerInterface;
+
 class Db{
     private $handler = null;
     private $config = array();
@@ -9,7 +11,7 @@ class Db{
     private $stm = null;   // 预编译对象
     private $stmsql = '';  // 最后预编译的 sql 语句
     
-    public function __construct($logger, $dsn, $user, $pass, $extra=null){
+    public function __construct(LoggerInterface $logger, $dsn, $user, $pass, $extra=null){
         $this->logger = $logger;
         
         if(!$extra) {

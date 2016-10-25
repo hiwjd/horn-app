@@ -14,8 +14,6 @@ class Util {
     }
 
     public static function checkCaptcha($type, $input) {
-        global $container;
-        $container->logger->info("xxxxx");
         if(!isset($_SESSION['captcha'])) {
             return false;
         }
@@ -33,8 +31,8 @@ class Util {
         return $hashids->encode($id);
     }
 
-    public static function BeJson($error, $code) {
-        return ['code' => $code, 'msg' => $error];
+    public static function BeJson($msg, $code) {
+        return ['code' => $code, 'msg' => $msg];
     }
 
     public static function parseEmailHost($email) {

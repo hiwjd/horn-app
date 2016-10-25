@@ -67,23 +67,23 @@ class Staff {
         echo "http://www.horn.com:9092/signup/verify_email?s=$s";
     }
 
-    public function checkEmailByS($s) {
-        $sql = "select * from signup_email where s = ?";
-        $row = $this->db->GetRow($sql, array($s));
+    public function confirmEmail($token) {
+        $sql = "select * from signup_email where token = ?";
+        $row = $this->db->GetRow($sql, array($token));
         if(!$row) {
-            return array(1009, "无效链接");
+            throw new WrongArgException("无效链接");
         }
 
-        if(time() > (strtotime($row["created_at"]) + $row["expires_in"])) {
-            return array(1003, "链接超时了，请重新发送确认邮件");
+        if(time() > $row["expires_at"]) {
+            throw new ExpiresSignupEmailException("链接超时了，请重新发送确认邮件");
         }
 
         $email = $row["email"];
-        $sql = "update staff set status = ?, updated_at = ?, pass = ? where email = ?";
-        $this->db->Exec($sql, array(self::ACTIVE, date("Y-m-d H:i:s"), '', $email));
-        $this->db->Exec("delete from signup_email where s = ?", array($s));
+        $sql = "update staff set status = ?, updated_at = ? where email = ?";
+        $this->db->Exec($sql, array(self::ACTIVE, date("Y-m-d H:i:s"), $email));
+        $this->db->Exec("delete from signup_email where token = ?", array($token));
 
-        return array(0, $email);
+        return $email;
     }
 
     public function genActiveToken($email) {

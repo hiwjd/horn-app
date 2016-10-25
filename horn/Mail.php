@@ -1,12 +1,14 @@
 <?php
 namespace Horn;
 
+use Psr\Log\LoggerInterface;
+
 class Mail {
 
     private $logger;
     private $queue;
 
-    public function __construct($logger, $queue) {
+    public function __construct(LoggerInterface $logger, $queue) {
         $this->logger = $logger;
         $this->queue = $queue;
     }
