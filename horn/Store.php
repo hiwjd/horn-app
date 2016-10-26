@@ -20,6 +20,8 @@ class Store {
         $this->redis = $redis;
     }
 
+    // 根据用户ID获取到分配给该用户的推送服务器地址
+    // 注意，地址格式是只包含域和端口，127.0.0.1:9001
     public function getPusherByUid($uid) {
         $this->logger->info("Store.getPusherByUid uid[$uid]");
         $addr = $this->redis->get("uid-pusher-addr-$uid");
@@ -27,6 +29,8 @@ class Store {
         return $addr;
     }
 
+    // 给用户分配推送服务器
+    // 返回该服务器地址，格式：127.0.0.1:9001
     public function assignIdlePusher($uid) {
         $this->logger->info("Store.assignIdlePusher uid[$uid]");
 
@@ -42,6 +46,8 @@ class Store {
         return $addr;
     }
 
+    // 根据用户的“指纹”查找用户ID
+    // “指纹”是浏览器根据各种因素生成的一段字符串 
     public function getUidByFP($fp) {
         return $this->redis->get("fp-$fp");
     }

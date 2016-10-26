@@ -16,7 +16,7 @@ class Rpc {
 
     public function joinPusher($addr, $uid) {
         $this->logger->info("Rpc.joinPusher addr[$addr] uid[$uid]");
-        $url = $addr."/join";
+        $url = "http://".$addr."/join";
         $payload = json_encode(array("uid" => $uid));
         $this->logger->info(" -> url[$url] payload[$payload]");
         $options = array(
