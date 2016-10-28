@@ -52,6 +52,7 @@ class Chat {
         }
 
         $arr["mid"] = IdGen::next(); // 先生成消息ID
+        $arr["t"] = array("t0" => time());
 
         $payload = self::getPrefix($type).json_encode($arr, JSON_UNESCAPED_UNICODE);
         $this->queue->push(Queue::TOPIC_MESSAGE, $payload);

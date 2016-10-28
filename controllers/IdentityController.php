@@ -4,6 +4,7 @@ namespace Controller;
 use Slim\Container as ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Horn\Util;
 
 class IdentityController {
 
@@ -30,7 +31,8 @@ class IdentityController {
         
         return $rsp->withJson(array(
             "code" => 0,
-            "msg" => ""
+            "msg" => "",
+            "uid" => $uid
         ));
     }
 

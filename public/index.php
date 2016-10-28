@@ -20,6 +20,11 @@ $config = [
 $app = new \Slim\App(["settings" => $config]);
 $container = $app->getContainer();
 
+$app->add(function(Request $req, Response $rsp, callable $next) {
+    $newrsp = $rsp->withHeader("Access-Control-Allow-Origin", "*");
+    return $next($req, $newrsp);
+});
+
 // 日志中间件
 $app->add(new LoggerMiddleware($container));
 
@@ -83,7 +88,7 @@ $container['errorHandler'] = function (ContainerInterface $c) {
         } else {
             return $rsp->withStatus(500)
                 ->withHeader('Content-Type', 'text/html')
-                ->write('Something went wrong! '.$e->getMessage()."\r\n".$e->getTraceAsString());
+                ->write('Something went wrong! '.get_class($e)."#".$e->getMessage()."\r\n".$e->getTraceAsString());
         }
     };
 };
