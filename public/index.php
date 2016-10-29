@@ -64,6 +64,9 @@ $app->get("/api/state/check", "Controller\StateController:check");
 // 消息上发
 $app->post("/api/message", "Controller\ChatController:message");
 
+// 获取
+$app->get("/api/messages", "Controller\ChatController:messages");
+
 // 上报追踪信息
 $app->get("/api/user/track", "Controller\TrackController:track");
 
@@ -113,6 +116,12 @@ $container['db'] = function(ContainerInterface $c) {
     $pass = 'rootMM123!@#';
     return new Horn\Db($c->logger, $dsn, $user, $pass);
 };
+$container['db2'] = function(ContainerInterface $c) {
+    $dsn = 'mysql:host=localhost;dbname=horn';
+    $user = 'root';
+    $pass = 'rootMM123!@#';
+    return new Horn\Db($c->logger, $dsn, $user, $pass);
+};
 $container['staff'] = function(ContainerInterface $c) {
     $staff = new Horn\Staff($c->db);
     return $staff;
@@ -126,7 +135,7 @@ $container['mail'] = function(ContainerInterface $c) {
     return $mail;
 };
 $container['chat'] = function(ContainerInterface $c) {
-    $mail = new Horn\Chat($c->logger, $c->queue);
+    $mail = new Horn\Chat($c->logger, $c->queue, $c->db2);
     return $mail;
 };
 $container['redis'] = function(ContainerInterface $c) {

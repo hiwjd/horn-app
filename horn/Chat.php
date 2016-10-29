@@ -7,10 +7,12 @@ class Chat {
 
     private $logger;
     private $queue;
+    private $db;
 
-    public function __construct(LoggerInterface $logger, Queue $queue) {
+    public function __construct(LoggerInterface $logger, Queue $queue, Db $db) {
         $this->logger = $logger;
         $this->queue = $queue;
+        $this->db = $db;
     }
 
     public function dispatchMsg($body) {
@@ -58,6 +60,28 @@ class Chat {
         $this->queue->push(Queue::TOPIC_MESSAGE, $payload);
 
         return $arr;
+    }
+
+    public function getMessages($cond) {
+        $limit = $cond["limit"];
+        $arr = array($cond["chatId"]);
+        $where = "";
+        if($cond["mid"]) {
+            if($cond["style"] == "next") {
+                $where = " and mid > ? ";
+            } else {
+                $where = " and mid < ? ";
+            }
+            $arr[] = $cond["mid"];
+        }
+        $sql = "select * from messages where chat_id = ? $where limit $limit";
+        $rows = $this->db->GetRows($sql, $arr);
+        $tot = $this->db->GetNum("select count(1) from messages where chat_id = ? $where", $arr);
+
+        return array(
+            "data" => $rows,
+            "tot" => $tot
+        );
     }
 
     // 推给nsq的消息前面加个前缀，方便消费者在解析json之前就知道是什么类型
