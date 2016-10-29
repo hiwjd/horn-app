@@ -3,11 +3,11 @@
 class TestMessageCommand extends ConsoleKit\Command
 {
     private $bodys = array(
-        '{"type":"text","chat":{"id":"chat1"},"from":{"id":"2yZGG2d1ZjDTd5gqgz03ON2","name":"王剑冬"},"text":"你好啊你好啊你好啊你好啊你好啊你好啊zzz"}',
+        '{"type":"text","chat":{"id":"chat1"},"from":{"id":"uid:rBBn5on5DjepB8fZD4yUf3K","name":"王剑冬"},"text":"你好啊你好啊你好啊你好啊你好啊你好啊zzz"}',
         '{"type":"file","chat":{"id":"chat1"},"from":{"id":"uid1","name":"张三"},"file":{"src":"http://127.0.0.1/","size":280,"name":"filename"}}',
         '{"type":"image","chat":{"id":"chat1"},"from":{"id":"uid1","name":"李四"},"image":{"src":"http://127.0.0.1/a.png","height":20,"width":20,"size":300}}',
-        '{"type":"request_chat","from":{"id":"uid1","name":"王五"},"cmd":{"chat":{"id":"chat1"},"uids":["rBBn5on5DjepB8fZD4yUf3K"]}}',
-        '{"type":"join_chat","from":{"id":"rBBn5on5DjepB8fZD4yUf3K","name":"王五"},"cmd":{"chat":{"id":"chat1"}}}'
+        '{"type":"request_chat","from":{"id":"uid1","name":"王五"},"event":{"chat":{"id":"chat1"},"uids":["rBBn5on5DjepB8fZD4yUf3K"]}}',
+        '{"type":"join_chat","from":{"id":"rBBn5on5DjepB8fZD4yUf3K","name":"王五"},"event":{"chat":{"id":"chat1"}}}'
     );
 
     public function execute(array $args, array $options = array())

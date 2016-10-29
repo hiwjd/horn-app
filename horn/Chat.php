@@ -49,14 +49,14 @@ class Chat {
                 break;
 
             case 'request_chat':
-                if(!isset($arr["cmd"])) {
-                    throw new WrongArgException("缺少[cmd]");
+                if(!isset($arr["event"])) {
+                    throw new WrongArgException("缺少[event]");
                 }
                 break;
 
             case 'join_chat':
-                if(!isset($arr["cmd"])) {
-                    throw new WrongArgException("缺少[cmd]");
+                if(!isset($arr["event"])) {
+                    throw new WrongArgException("缺少[event]");
                 }
                 break;
             
