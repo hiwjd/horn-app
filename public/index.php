@@ -13,6 +13,7 @@ use Horn\CaptachType;
 use Horn\Session;
 use Controller\CaptchaController;
 use Middleware\LoggerMiddleware;
+use Middleware\CorsMiddleware;
 
 $config = [
     "displayErrorDetails" => true
@@ -20,10 +21,8 @@ $config = [
 $app = new \Slim\App(["settings" => $config]);
 $container = $app->getContainer();
 
-$app->add(function(Request $req, Response $rsp, callable $next) {
-    $newrsp = $rsp->withHeader("Access-Control-Allow-Origin", "*");
-    return $next($req, $newrsp);
-});
+// 跨域头
+$app->add(new CorsMiddleware($container));
 
 // 日志中间件
 $app->add(new LoggerMiddleware($container));
