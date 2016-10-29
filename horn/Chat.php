@@ -37,19 +37,31 @@ class Chat {
                 break;
 
             case 'file':
-                # code...
+                if(!isset($arr["file"])) {
+                    throw new WrongArgException("缺少[file]");
+                }
                 break;
 
             case 'image':
-                # code...
+                if(!isset($arr["image"])) {
+                    throw new WrongArgException("缺少[image]");
+                }
                 break;
 
-            case 'event':
-                # code...
+            case 'request_chat':
+                if(!isset($arr["cmd"])) {
+                    throw new WrongArgException("缺少[cmd]");
+                }
+                break;
+
+            case 'join_chat':
+                if(!isset($arr["cmd"])) {
+                    throw new WrongArgException("缺少[cmd]");
+                }
                 break;
             
             default:
-                # code...
+                throw new WrongArgException("不支持消息[$type]");
                 break;
         }
 
@@ -90,7 +102,8 @@ class Chat {
             'text' => '#a',
             'file' => '#b',
             'image' => '#c',
-            'event' => '#d'
+            'request_chat' => '#d',
+            'join_chat' => '#e'
         );
         return isset($map[$type]) ? $map[$type] : '';
     }
