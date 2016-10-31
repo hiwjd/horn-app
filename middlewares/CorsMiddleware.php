@@ -23,7 +23,9 @@ class CorsMiddleware {
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function __invoke(Request $req, Response $rsp, callable $next) {
-        $newrsp = $rsp->withHeader("Access-Control-Allow-Origin", "*");
+        $newrsp = $rsp->withHeader("Access-Control-Allow-Origin", "*")
+                    ->withHeader("Access-Control-Allow-Methods", "GET,POST")
+                    ->withHeader("Access-Control-Allow-Headers", "content-type");
         return $next($req, $newrsp);
     }
 

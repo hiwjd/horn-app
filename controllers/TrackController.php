@@ -62,6 +62,9 @@ class TrackController {
         
         $store = $this->ci->store;
 
+        // 获取状态数据
+        $state = $store->getState($uid);
+
         $pusherAddr = $store->getPusherByUid($uid);
         if($pusherAddr == "") {
             $pusherAddr = $store->assignIdlePusher($uid);
@@ -91,7 +94,8 @@ class TrackController {
             "code" => 0,
             "uid" => $uid,
             "addr" => $pusherAddr,
-            "track_id" => $trackId
+            "track_id" => $trackId,
+            "state" => $state
         ));
     }
 

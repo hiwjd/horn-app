@@ -55,4 +55,16 @@ class Store {
     public function setUidByFP($fp, $uid) {
         return $this->redis->set("fp-$fp", $uid);
     }
+
+    // 获取用户当下的状态数据
+    // 对话，
+    public function getState($uid) {
+        $chats = $this->redis->smembers("user-chats-$uid");
+        $version = $this->redis->get("event-version-$uid");
+
+        return array(
+            "chats" => $chats,
+            "version" => $version
+        );
+    }
 }

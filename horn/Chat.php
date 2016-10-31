@@ -52,11 +52,20 @@ class Chat {
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
+                if(!isset($arr["event"]["uids"])) {
+                    throw new WrongArgException("缺少[event.uids]");
+                }
+                $arr["event"]["chat"] = array(
+                    "id" => Util::randStr(24)
+                );
                 break;
 
             case 'join_chat':
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
+                }
+                if(!isset($arr["event"]["chat"])) {
+                    throw new WrongArgException("缺少[event.chat]");
                 }
                 break;
             
