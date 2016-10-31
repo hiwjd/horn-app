@@ -29,6 +29,6 @@ class TestMessageCommand extends ConsoleKit\Command
 
     private function randomBody() {
         $i = rand(0,4);
-        return $this->bodys[$i];
+        return $this->bodys[4];
     }
 }
