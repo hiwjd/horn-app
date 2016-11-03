@@ -22,12 +22,8 @@ class IdentityController {
                 "msg" => "缺少必要参数"
             ));
         }
-
-        $uid = $this->ci->store->getUidByFP($fp);
-        if(!$uid) {
-            $uid = Util::randStr(23);
-            $this->ci->store->setUidByFP($fp, $uid);
-        }
+        
+        $uid = $this->ci->store->mustGetUid($fp);
         
         return $rsp->withJson(array(
             "code" => 0,

@@ -23,7 +23,7 @@ class Mail {
 
         $this->logger->info(" -> payload: [$payload]");
 
-        $res = $this->queue->push(Queue::TOPIC_SIGNUP_EMAIL, $payload);
+        $res = $this->queue->push(Queue::TOPIC_SIGNUP_EMAIL, "#g".$payload);
 
     }
 

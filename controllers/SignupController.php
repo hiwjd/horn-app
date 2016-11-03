@@ -45,9 +45,7 @@ class SignupController {
             break;
         }
 
-        $token = $this->ci->staff->genActiveToken($email);
-
-        $this->ci->mail->push($email, "signup", array("token" => $token));
+        $this->ci->mail->push($email, "signup", "");
 
         return $rsp->withJson(Util::BeJson("邮件已发出", 0));
     }
@@ -57,7 +55,7 @@ class SignupController {
         $token = $req->getParam("s");
         $email = $this->ci->staff->confirmEmail($token);
 
-        return $rsp->withRedirect("/confirm?email=$email");
+        return $rsp->withRedirect("/email_active?email=$email");
     }
 
     // 注册
@@ -82,8 +80,7 @@ class SignupController {
         if($staff) {
             switch($staff['status']) {
                 case Staff::PENDING:
-                    $token = $this->ci->staff->genActiveToken($email);
-                    $this->ci->mail->push($email, "signup", array("token" => $token));
+                    $this->ci->mail->push($email, "signup", "");
                     throw new NeedTipException("重新发送了确认邮件");
                 break;
                 case Staff::ACTIVE:
@@ -99,8 +96,7 @@ class SignupController {
 
         $_SESSION['signup_email'] = $email;
 
-        $token = $this->ci->staff->genActiveToken($email);
-        $this->ci->mail->push($email, "signup", array("token" => $token));
+        $this->ci->mail->push($email, "signup", "");
         return $rsp->withJson(Util::BeJson('注册成功', 0));
     }
 }

@@ -53,7 +53,7 @@ class TrackController {
             'ip' => $ip
         );
 
-        $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, json_encode($viewData, JSON_UNESCAPED_UNICODE));
+        $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));
 
         // 查看uid有没有分配过pusher
         // 如果已经分配过pusher那么直接使用这个pusher
@@ -89,6 +89,8 @@ class TrackController {
                 ));
             }
         }
+        // 维护用户列表
+        $store->manageOnlineUsers($uid);
 
         return $rsp->withJson(array(
             "code" => 0,

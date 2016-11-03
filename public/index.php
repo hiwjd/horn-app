@@ -73,6 +73,9 @@ $app->get("/api/user/track", "Controller\TrackController:track");
 // 识别用户身份
 $app->get("/api/user/id", "Controller\IdentityController:identity");
 
+// 在线用户列表
+$app->get("/api/user/online", "Controller\UserController:online");
+
 $container['logger'] = function(ContainerInterface $c) {
     $logger = new Logger('app');
     $logger->pushHandler(new StreamHandler('/home/horn/horn-app/logs/app-'.date('Y-m-d').'.log', Logger::DEBUG));
@@ -111,7 +114,7 @@ $container['notAllowedHandler'] = function (ContainerInterface $c) {
     };
 };
 $container['db'] = function(ContainerInterface $c) {
-    $dsn = 'mysql:host=localhost;dbname=horn_admin';
+    $dsn = 'mysql:host=localhost;dbname=horn';
     $user = 'root';
     $pass = 'rootMM123!@#';
     return new Horn\Db($c->logger, $dsn, $user, $pass);

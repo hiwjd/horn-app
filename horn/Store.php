@@ -67,4 +67,23 @@ class Store {
             "version" => $version
         );
     }
+
+    public function mustGetUid($fp) {
+        $uid = $this->getUidByFP($fp);
+        if(!$uid) {
+            $uid = Util::randStr(23);
+            $this->setUidByFP($fp, $uid);
+        }
+
+        return $uid;
+    }
+
+    public function manageOnlineUsers($uid) {
+        return $this->redis->sadd("user-online-ids", $uid);
+    }
+
+    public function getOnlineUsers() {
+        $uids = $this->redis->smembers("user-online-ids");
+        ;
+    }
 }
