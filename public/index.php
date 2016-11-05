@@ -145,7 +145,7 @@ $container['redis'] = function(ContainerInterface $c) {
     return new Predis\Client();
 };
 $container['store'] = function(ContainerInterface $c) {
-    return new Horn\Store($c->logger, $c->redis);
+    return new Horn\Store($c->logger, $c->redis, $c->db);
 };
 $container['rpc'] = function(ContainerInterface $c) {
     return new Horn\Rpc($c->logger);

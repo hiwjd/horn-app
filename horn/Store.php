@@ -14,10 +14,12 @@ class Store {
 
     private $logger;
     private $redis;
+    private $db;
 
-    public function __construct(LoggerInterface $logger, Client $redis) {
+    public function __construct(LoggerInterface $logger, Client $redis, Db $db) {
         $this->logger = $logger;
         $this->redis = $redis;
+        $this->db = $db;
     }
 
     // 根据用户ID获取到分配给该用户的推送服务器地址
@@ -59,7 +61,8 @@ class Store {
     // 获取用户当下的状态数据
     // 对话，
     public function getState($uid) {
-        $chats = $this->redis->smembers("user-chats-$uid");
+        $chats = $this->db->GetRows("select c.*,c.chat_id as id from chat_user cu left join chats c on cu.chat_id=c.chat_id where cu.uid=?", array($uid));
+        //$chats = $this->redis->smembers("user-chats-$uid");
         $version = $this->redis->get("event-version-$uid");
 
         return array(
