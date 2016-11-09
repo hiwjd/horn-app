@@ -89,4 +89,24 @@ class Store {
         $uids = $this->redis->smembers("user-online-ids");
         ;
     }
+
+    public function staffSignin($staff) {
+        $cid = $staff["cid"];
+        return $this->redis->sadd("company-staffs-$cid", $staff["id"]);
+    }
+
+    public function checkTimeout($uid, $interval) {
+        $key = "timeout-$uid";
+        $latest = $this->redis->get($key);
+        if(!$latest) {
+            $this->redis->set($key, time());
+            return true;
+        }
+
+        if((time() - $latest) > $interval) {
+            return false;
+        }
+
+        return true;
+    }
 }

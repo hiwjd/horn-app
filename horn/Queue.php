@@ -11,6 +11,7 @@ class Queue {
     //const TOPIC_EVENT = 'signup_email';
     const TOPIC_MESSAGE = 'message';
     const TOPIC_VIEW_PAGE = 'view_page';
+    const TOPIC_TIMEOUT = 'timeout';
 
     private $logger;
     private $client;

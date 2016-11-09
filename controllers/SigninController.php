@@ -35,12 +35,13 @@ class SigninController {
             throw new MissingArgException("请输入密码");
         }
 
-        $user = $this->ci->staff->auth(['email'=>$email, 'pass'=>$pass]);
-        if(!$user) {
+        $staff = $this->ci->staff->auth(['email'=>$email, 'pass'=>$pass]);
+        if(!$staff) {
             throw new NeedTipException("账号或密码错误");
         }
 
-        $_SESSION['user'] = $user;
+        $_SESSION['staff'] = $staff;
+        $this->ci->store->staffSignin($staff);
         return $rsp->withJson(Util::BeJson('登录成功', 0));
     }
 }

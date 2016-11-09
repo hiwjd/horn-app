@@ -37,6 +37,13 @@ $app->get("/api", function(Request $req, Response $rsp, $args) use ($app) {
 
 $app->any("/api/ttt", "Controller\TestController:abc");
 
+
+/******************************************************************************/
+/******************************************************************************/
+/****************************** 官网注册和登录等接口 ******************************/
+/******************************************************************************/
+/******************************************************************************/
+
 // 注册
 $app->post("/api/signup", "Controller\SignupController:signup");
 
@@ -61,6 +68,13 @@ $app->get("/api/captcha/signup", "Controller\CaptchaController:signup");
 // 登录状态检查
 $app->get("/api/state/check", "Controller\StateController:check");
 
+
+/******************************************************************************/
+/******************************************************************************/
+/********************************* 通讯及其他接口 ********************************/
+/******************************************************************************/
+/******************************************************************************/
+
 // 消息上发
 $app->post("/api/message", "Controller\ChatController:message");
 
@@ -70,17 +84,39 @@ $app->get("/api/messages", "Controller\ChatController:messages");
 // 上报追踪信息
 $app->get("/api/user/track", "Controller\TrackController:track");
 
+// 客服信息
+$app->get("/api/staff/info", "Controller\StaffController:info");
+
+// 通信初始化
+$app->get("/api/state/init", "Controller\StateController:init");
+
 // 识别用户身份
 $app->get("/api/user/id", "Controller\IdentityController:identity");
 
 // 在线用户列表
 $app->get("/api/user/online", "Controller\UserController:online");
 
+// 分配推送服务
+$app->get("/api/pusher/assign", "Controller\PusherController:assign");
+
+// 心跳
+$app->get("/api/ping", "Controller\PingController:ping");
+
+
+/******************************************************************************/
+/******************************************************************************/
+/*********************************** 注册依赖 ***********************************/
+/******************************************************************************/
+/******************************************************************************/
+
+// 日志
 $container['logger'] = function(ContainerInterface $c) {
     $logger = new Logger('app');
     $logger->pushHandler(new StreamHandler('/home/horn/horn-app/logs/app-'.date('Y-m-d').'.log', Logger::DEBUG));
     return $logger;
 };
+
+// 错误处理
 $container['errorHandler'] = function (ContainerInterface $c) {
     return function (Request $req, Response $rsp, $e) use ($c) {
         $c->logger->error($e, array($req, $rsp));
@@ -97,6 +133,8 @@ $container['errorHandler'] = function (ContainerInterface $c) {
         }
     };
 };
+
+// 访问不存在的资源
 $container['notFoundHandler'] = function (ContainerInterface $c) {
     return function (Request $req, Response $rsp) use ( $c) {
         return $rsp->withJson(array(
@@ -105,6 +143,8 @@ $container['notFoundHandler'] = function (ContainerInterface $c) {
         ));
     };
 };
+
+// 访问不允许的资源
 $container['notAllowedHandler'] = function (ContainerInterface $c) {
     return function (Request $req, Response $rsp, $methods) use ( $c) {
         return $rsp->withJson(array(
@@ -113,40 +153,58 @@ $container['notAllowedHandler'] = function (ContainerInterface $c) {
         ));
     };
 };
+
+// mysql读写
 $container['db'] = function(ContainerInterface $c) {
     $dsn = 'mysql:host=localhost;dbname=horn';
     $user = 'root';
     $pass = 'rootMM123!@#';
     return new Horn\Db($c->logger, $dsn, $user, $pass);
 };
+
+// mysql读
 $container['db2'] = function(ContainerInterface $c) {
     $dsn = 'mysql:host=localhost;dbname=horn';
     $user = 'root';
     $pass = 'rootMM123!@#';
     return new Horn\Db($c->logger, $dsn, $user, $pass);
 };
+
+// 客服类
 $container['staff'] = function(ContainerInterface $c) {
     $staff = new Horn\Staff($c->db);
     return $staff;
 };
+
+// nsq队列操作类
 $container['queue'] = function(ContainerInterface $c) {
     $queue = new Horn\Queue($c->logger, "http://127.0.0.1:4151");
     return $queue;
 };
+
+// 邮件类
 $container['mail'] = function(ContainerInterface $c) {
     $mail = new Horn\Mail($c->logger, $c->queue);
     return $mail;
 };
+
+// 对话类
 $container['chat'] = function(ContainerInterface $c) {
     $mail = new Horn\Chat($c->logger, $c->queue, $c->db2);
     return $mail;
 };
+
+// redis类
 $container['redis'] = function(ContainerInterface $c) {
     return new Predis\Client();
 };
+
+// 状态存取
 $container['store'] = function(ContainerInterface $c) {
     return new Horn\Store($c->logger, $c->redis, $c->db);
 };
+
+// 远程调用类
 $container['rpc'] = function(ContainerInterface $c) {
     return new Horn\Rpc($c->logger);
 };

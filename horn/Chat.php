@@ -88,7 +88,7 @@ class Chat {
         $arr = array($cond["chatId"]);
         $where = "";
         if($cond["mid"]) {
-            if($cond["style"] == "next") {
+            if($cond["direction"] == "next") {
                 $where = " and mid > ? ";
             } else {
                 $where = " and mid < ? ";

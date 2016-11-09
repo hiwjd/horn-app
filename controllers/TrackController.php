@@ -23,28 +23,32 @@ class TrackController {
         
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
-        $group = $req->getParam("group");
+        $gid = $req->getParam("gid");
         $url = $req->getParam("url");
         $title = $req->getParam("title");
         $referer = $req->getParam("referer");
         $os = $req->getParam("os");
         $browser = $req->getParam("browser");
         $ip = $req->getAttribute('ip_address');
-        $trackId = date("YmdHis").str_pad($uid, 9, "0", STR_PAD_LEFT).Util::randStr(16);
 
-        if(!$uid/* || !$fp || !$group*/) {
+        if(!$uid && !$fp) {
             return $rsp->withJson(array(
                 "code" => 1,
                 "msg" => "缺少必要参数"
             ));
         }
+
+        if(!$uid) {
+            $uid = $this->ci->store->mustGetUid($fp);
+        }
+        $trackId = date("YmdHis").$uid.Util::randStr(16);
         
         // 把访问信息存起来
         $viewData = array(
             'track_id' => $trackId,
             'uid' => $uid,
             'fp' => $fp,
-            'group' => $group,
+            'cid' => $cid,
             'url' => $url,
             'title' => $title,
             'referer' => $referer,
@@ -54,50 +58,16 @@ class TrackController {
         );
 
         $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));
-
-        // 查看uid有没有分配过pusher
-        // 如果已经分配过pusher那么直接使用这个pusher
-        // 否则挑选最空的pusher，通知pusher这个uid会从你这获取消息
-        // 返回pusher地址
         
         $store = $this->ci->store;
-
-        // 获取状态数据
-        $state = $store->getState($uid);
-
-        $pusherAddr = $store->getPusherByUid($uid);
-        if($pusherAddr == "") {
-            $pusherAddr = $store->assignIdlePusher($uid);
-            if($pusherAddr == "") {
-                return $rsp->withJson(array(
-                    "code" => 1,
-                    "msg" => "分配推送服务器失败",
-                    "uid" => $uid,
-                    "addr" => $pusherAddr,
-                    "track_id" => $trackId
-                ));
-            }
-
-            // 告诉pusher有新的uid了
-            if(!$this->ci->rpc->joinPusher($pusherAddr, $uid)) {
-                return $rsp->withJson(array(
-                    "code" => 1,
-                    "msg" => "加入推送服务器失败",
-                    "uid" => $uid,
-                    "addr" => $pusherAddr,
-                    "track_id" => $trackId
-                ));
-            }
-        }
+        
         // 维护用户列表
         $store->manageOnlineUsers($uid);
 
         return $rsp->withJson(array(
             "code" => 0,
             "uid" => $uid,
-            "addr" => $pusherAddr,
-            "track_id" => $trackId,
-            "state" => $state
+            "track_id" => $trackId
         ));
     }
 

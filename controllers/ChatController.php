@@ -50,7 +50,7 @@ class ChatController {
         $chatId = $req->getParam("chat_id");
         $mid = $req->getParam("mid");
         $limit = $req->getParam("limit", 20);
-        $style = $req->getParam("style", "prev"); // prev: 往老的翻 next: 往新的翻
+        $direction = $req->getParam("direction", "prev"); // prev: 往老的翻 next: 往新的翻
 
         if($limit < 1 || $limit > 100) {
             $limit = 100;
@@ -60,7 +60,7 @@ class ChatController {
             "chatId" => $chatId,
             "mid" => $mid,
             "limit" => $limit,
-            "style" => $style
+            "direction" => $direction
         );
 
         $r = $this->ci->chat->getMessages($cond);

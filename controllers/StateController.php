@@ -14,10 +14,61 @@ class StateController {
     }
 
     public function check(Request $req, Response $rsp, $args) {
-        if(isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+        if(isset($_SESSION['staff']) && is_array($_SESSION['staff'])) {
             return $rsp->withJson(array('code' => 0));
         } else {
             return $rsp->withJson(array('code' => 1009));
         }
+    }
+
+    public function init(Request $req, Response $rsp, $args) {
+        $uid = $req->getParam("uid");
+        $fp = $req->getParam("fp");
+        $trackId = $req->getParam("track_id");
+        
+        $store = $this->ci->store;
+
+        // 获取状态数据
+        $state = $store->getState($uid);
+
+        // 查看uid有没有分配过pusher
+        // 如果已经分配过pusher那么直接使用这个pusher
+        // 否则挑选最空的pusher，通知pusher这个uid会从你这获取消息
+        // 返回pusher地址
+        $pusherAddr = $store->getPusherByUid($uid);
+        //if($pusherAddr == "") {
+            $pusherAddr = $store->assignIdlePusher($uid);
+            if($pusherAddr == "") {
+                return $rsp->withJson(array(
+                    "code" => 1,
+                    "msg" => "分配推送服务器失败",
+                    "uid" => $uid,
+                    "addr" => $pusherAddr,
+                    "track_id" => $trackId
+                ));
+            }
+
+            // 告诉pusher有新的uid了
+            if(!$this->ci->rpc->joinPusher($pusherAddr, $uid)) {
+                return $rsp->withJson(array(
+                    "code" => 1,
+                    "msg" => "加入推送服务器失败",
+                    "uid" => $uid,
+                    "addr" => $pusherAddr,
+                    "track_id" => $trackId
+                ));
+            }
+        //}
+        
+        // 维护用户列表
+        $store->manageOnlineUsers($uid);
+
+        return $rsp->withJson(array(
+            "code" => 0,
+            "uid" => $uid,
+            "addr" => $pusherAddr,
+            "track_id" => $trackId,
+            "state" => $state
+        ));
     }
 }
