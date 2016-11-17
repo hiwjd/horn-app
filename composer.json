@@ -13,7 +13,8 @@
         "psr-4": {
             "Horn\\": "horn/",
             "Controller\\": "controllers/",
-            "Middleware\\": "middlewares/"
+            "Middleware\\": "middlewares/",
+            "Registry\\": "registrys/"
         }
     }
 }

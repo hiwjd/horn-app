@@ -23,7 +23,7 @@ class TrackController {
         
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
-        $gid = $req->getParam("gid");
+        $cid = $req->getParam("cid");
         $url = $req->getParam("url");
         $title = $req->getParam("title");
         $referer = $req->getParam("referer");
@@ -67,7 +67,8 @@ class TrackController {
         return $rsp->withJson(array(
             "code" => 0,
             "uid" => $uid,
-            "track_id" => $trackId
+            "track_id" => $trackId,
+            "fp" => $fp
         ));
     }
 

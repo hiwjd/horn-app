@@ -95,17 +95,36 @@ class Store {
         return $this->redis->sadd("company-staffs-$cid", $staff["id"]);
     }
 
-    public function checkTimeout($uid, $interval) {
-        $key = "timeout-$uid";
+    /**
+     * 检查心跳超时
+     * @param  [type] $uid       用户ID
+     * @param  [type] $interval  心跳间隔 多久心跳一次
+     * @param  [type] $tolerance 容差 允许连续超时几次 这个次数内的不会被视为超时
+     * @return [type]            [description]
+     */
+    public function checkTimeout($uid, $interval, $tolerance) {
+        $key = "timeout-$uid"; // 最后次心跳时间
+        $keyTolerance = "timeout-tolerance-$uid"; // 连续超时计次器
+
         $latest = $this->redis->get($key);
+        // 更新最后心跳时间
+        $this->redis->set($key, time());
+
         if(!$latest) {
-            $this->redis->set($key, time());
+            $this->redis->set($keyTolerance, 0);
             return true;
         }
 
         if((time() - $latest) > $interval) {
-            return false;
+            $timeouts = $this->redis->incr($keyTolerance);
+            if($timeouts > $tolerance) {
+                return false;
+            }
+            return true; // 这里必须return 不然后面会把连续超时计次器重置成0的
         }
+
+        // 重置连续超时计次器 正常后就需要把连续超时重置成0
+        $this->redis->set($keyTolerance, 0);
 
         return true;
     }

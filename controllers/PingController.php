@@ -16,16 +16,20 @@ class PingController {
 
     // 心跳
     public function ping(Request $req, Response $rsp, $args) {
+        $cid = $req->getParam("cid");
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
         $trackId = $req->getParam("track_id");
+        $interval = $req->getParam("interval", 10);
+        $tolerance = $req->getParam("tolerance", 3);
 
-        $interval = 30;
-
-        if(!$this->ci->store->checkTimeout($uid, $interval)) {
+        if(!$this->ci->store->checkTimeout($uid, $interval, $tolerance)) {
             $arr = array(
+                "type" => "timeout",
+                "cid" => $cid,
                 "uid" => $uid
             );
+            $arr["mid"] = IdGen::next(); // 先生成消息ID
             $payload = "#g".json_encode($arr, JSON_UNESCAPED_UNICODE);
             $this->ci->queue->push(Queue::TOPIC_TIMEOUT, $payload); // 通知超时了
             return $rsp->withJson(array(
@@ -37,7 +41,7 @@ class PingController {
 
         return $rsp->withJson(array(
             "code" => 0,
-            "msg" => "",
+            "msg" => "ok",
             "interval" => $interval
         ));
     }
