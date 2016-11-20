@@ -17,8 +17,8 @@ class SignoutController {
     }
 
     public function signout(Request $req, Response $rsp, $args) {
-        if(isset($_SESSION['user'])) {
-            unset($_SESSION['user']);
+        if(isset($_SESSION['staff'])) {
+            unset($_SESSION['staff']);
         }
 
         return $rsp->withJson(Util::BeJson('登出', 0));

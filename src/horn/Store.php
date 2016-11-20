@@ -61,9 +61,22 @@ class Store {
     // 获取用户当下的状态数据
     // 对话，
     public function getState($uid) {
-        $chats = $this->db->GetRows("select c.*,c.chat_id as id from chat_user cu left join chats c on cu.chat_id=c.chat_id where cu.uid=?", array($uid));
+        $chats = $this->db->GetRows("select c.*,c.chat_id as id from chat_user cu left join chats c on cu.chat_id=c.chat_id where cu.uid=? and c.state='active'", array($uid));
         //$chats = $this->redis->smembers("user-chats-$uid");
-        $version = $this->redis->get("event-version-$uid");
+        $version = $this->redis->get("state-version-$uid");
+
+        foreach($chats as &$chat) {
+            $chatId = $chat["chat_id"];
+
+            Util::formatChat($chat);
+
+            $msgs = $this->db->GetRows("select * from messages where chat_id = ? order by mid desc limit 30", array($chatId));
+            $msgs = array_reverse($msgs);
+            foreach($msgs as &$msg) {
+                Util::formatMessage($msg);
+            }
+            $chat["msgs"] = $msgs;
+        }
 
         return array(
             "chats" => $chats,
@@ -74,25 +87,26 @@ class Store {
     public function mustGetUid($fp) {
         $uid = $this->getUidByFP($fp);
         if(!$uid) {
-            $uid = Util::randStr(23);
+            $uid = IdGen::uid();
             $this->setUidByFP($fp, $uid);
         }
 
         return $uid;
     }
 
-    public function manageOnlineUsers($uid) {
-        return $this->redis->sadd("user-online-ids", $uid);
+    public function getOnlineUsers($cid) {
+        $sql = "select * from users where cid = ? and state = 'on'";
+        return $this->db->GetRows($sql, array($cid));
     }
 
-    public function getOnlineUsers() {
-        $uids = $this->redis->smembers("user-online-ids");
-        ;
+    public function getOnlineStaff($cid) {
+        $sql = "select * from staff where cid = ? and state = 'on'";
+        return $this->db->GetRows($sql, array($cid));
     }
 
     public function staffSignin($staff) {
-        $cid = $staff["cid"];
-        return $this->redis->sadd("company-staffs-$cid", $staff["id"]);
+        $sql = "update staff set state='on' where staff_id=?";
+        return $this->db->Exec($sql, array($staff["staff_id"]));
     }
 
     /**

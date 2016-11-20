@@ -72,7 +72,10 @@ class Router {
         $app->get("/api/user/id", "Controller\IdentityController:identity");
 
         // 在线用户列表
-        $app->get("/api/user/online", "Controller\UserController:online");
+        $app->get("/api/users/online", "Controller\UserController:online");
+
+        // 在线客服列表
+        $app->get("/api/staff/online", "Controller\StaffController:online");
 
         // 心跳
         $app->get("/api/ping", "Controller\PingController:ping");

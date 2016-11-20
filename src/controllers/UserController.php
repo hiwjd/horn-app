@@ -15,11 +15,13 @@ class UserController {
     }
 
     public function online(Request $req, Response $rsp, $args) {
-        $uids = $this->ci->store->getOnlineUsers();
+        $cid = $req->getParam("cid");
+        $users = $this->ci->store->getOnlineUsers($cid);
 
         return $rsp->withJson(array(
             "code" => 0,
-            "uids" => $uids
+            "msg" => "",
+            "data" => $users
         ));
     }
 

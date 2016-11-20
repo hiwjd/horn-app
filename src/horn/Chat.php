@@ -56,7 +56,7 @@ class Chat {
                     throw new WrongArgException("缺少[event.uids]");
                 }
                 $arr["event"]["chat"] = array(
-                    "id" => Util::randStr(25)
+                    "id" => IdGen::chatId()
                 );
                 break;
 

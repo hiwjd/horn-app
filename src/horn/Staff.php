@@ -15,15 +15,16 @@ class Staff {
         $this->db = $db;
     }
 
-    public function create($clientId, $data) {
+    public function create($cid, $data) {
         $name = isset($data['name']) ? $data['name'] : '';
         $mobile = isset($data['mobile']) ? $data['mobile'] : '';
         $email = isset($data['email']) ? $data['email'] : '';
         $pass = isset($data['pass']) ? $data['pass'] : '';
         $tel = isset($data['tel']) ? $data['tel'] : '';
         $pass = password_hash($pass, PASSWORD_DEFAULT);
-        $sql = "insert into staff(client_id,name,mobile,email,pass,tel)values(?,?,?,?,?,?)";
-        return $this->db->Insert($sql, array($clientId, $name, $mobile, $email, $pass, $tel));
+        $staffId = IdGen::staffId();
+        $sql = "insert into staff(staff_id,cid,name,mobile,email,pass,tel)values(?,?,?,?,?,?,?)";
+        return $this->db->Insert($sql, array($staffId, $cid, $name, $mobile, $email, $pass, $tel));
     }
 
     public function findByEmail($email) {
@@ -59,14 +60,6 @@ class Staff {
         return $user;
     }
 
-    public function sendSignupEmail($email) {
-        $s = Util::randStr(24);
-        $expires_in = 60*60;
-        $this->db->Insert($sql, array($s, $email, $expires_in));
-
-        echo "http://www.horn.com:9092/signup/verify_email?s=$s";
-    }
-
     public function confirmEmail($token) {
         $sql = "select * from signup_email where token = ?";
         $row = $this->db->GetRow($sql, array($token));
@@ -84,14 +77,5 @@ class Staff {
         $this->db->Exec("delete from signup_email where token = ?", array($token));
 
         return $email;
-    }
-
-    public function genActiveToken($email) {
-        $sql = "insert signup_email(email,token,expires_at)values(?,?,?) on duplicate key update token=?, expires_at=?";
-        $token = Util::randStr(50);
-        $expires_at = time() + 7200;
-        $this->db->Exec($sql, array($email, $token, $expires_at, $token, $expires_at));
-
-        return $token;
     }
 }

@@ -59,9 +59,6 @@ class StateController {
                 ));
             }
         //}
-        
-        // 维护用户列表
-        $store->manageOnlineUsers($uid);
 
         return $rsp->withJson(array(
             "code" => 0,

@@ -11,10 +11,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Horn\\": "horn/",
-            "Controller\\": "controllers/",
-            "Middleware\\": "middlewares/",
-            "Registry\\": "registrys/"
+            "Horn\\": "src/horn/",
+            "Controller\\": "src/controllers/",
+            "Middleware\\": "src/middlewares/",
+            "Registry\\": "src/registrys/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.6.*"
     }
 }

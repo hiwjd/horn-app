@@ -54,15 +54,11 @@ class TrackController {
             'referer' => $referer,
             'os' => $os,
             'browser' => $browser,
-            'ip' => $ip
+            'ip' => $ip,
+            'addr' => ''
         );
 
         $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));
-        
-        $store = $this->ci->store;
-        
-        // 维护用户列表
-        $store->manageOnlineUsers($uid);
 
         return $rsp->withJson(array(
             "code" => 0,
