@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
 use Horn\Queue;
 
-class PingController {
+class HeartbeatController {
     protected $ci;
 
     public function __construct(ContainerInterface $ci) {
@@ -15,12 +15,12 @@ class PingController {
     }
 
     // 心跳
-    public function ping(Request $req, Response $rsp, $args) {
+    public function heartbeat(Request $req, Response $rsp, $args) {
         $cid = $req->getParam("cid");
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
         $trackId = $req->getParam("track_id");
-        $interval = $req->getParam("interval", 10);
+        $interval = $req->getParam("interval", 30);
         $tolerance = $req->getParam("tolerance", 3);
 
         if(!$this->ci->store->checkTimeout($uid, $interval, $tolerance)) {
