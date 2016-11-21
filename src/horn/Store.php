@@ -99,7 +99,7 @@ class Store {
     }
 
     public function getOnlineUsers($cid) {
-        $sql = "select * from users where cid = ? and state = 'on'";
+        $sql = "select u.*,pv.* from users u left join page_views pv on u.track_id = pv.track_id where u.cid = ? and u.state = 'on'";
         return $this->db->GetRows($sql, array($cid));
     }
 
