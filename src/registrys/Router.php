@@ -78,7 +78,7 @@ class Router {
         $app->get("/api/staff/online", "Controller\StaffController:online");
 
         // 心跳
-        $app->get("/api/ping", "Controller\PingController:ping");
+        $app->get("/api/heartbeat", "Controller\HeartbeatController:heartbeat");
     }
 
 }
