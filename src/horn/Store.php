@@ -65,17 +65,21 @@ class Store {
         //$chats = $this->redis->smembers("user-chats-$uid");
         $version = $this->redis->get("state-version-$uid");
 
-        foreach($chats as &$chat) {
-            $chatId = $chat["chat_id"];
+        if(is_array($chats)) {
+            foreach($chats as &$chat) {
+                $chatId = $chat["chat_id"];
 
-            Util::formatChat($chat);
+                Util::formatChat($chat);
 
-            $msgs = $this->db->GetRows("select * from messages where chat_id = ? order by mid desc limit 30", array($chatId));
-            $msgs = array_reverse($msgs);
-            foreach($msgs as &$msg) {
-                Util::formatMessage($msg);
+                $msgs = $this->db->GetRows("select * from messages where chat_id = ? order by mid desc limit 30", array($chatId));
+                $msgs = array_reverse($msgs);
+                foreach($msgs as &$msg) {
+                    Util::formatMessage($msg);
+                }
+                $chat["msgs"] = $msgs;
             }
-            $chat["msgs"] = $msgs;
+        } else {
+            $chats = array();
         }
 
         return array(
