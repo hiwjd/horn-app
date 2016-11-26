@@ -31,4 +31,10 @@ class CaptchaController {
 
         return $rsp->withHeader('Content-type', 'image/jpeg');
     }
+
+    public function find_pass(Request $req, Response $rsp, $args) {
+        Util::captcha(CaptachType::FIND_PASS);
+
+        return $rsp->withHeader('Content-type', 'image/jpeg');
+    }
 }

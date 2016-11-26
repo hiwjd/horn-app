@@ -43,8 +43,20 @@ class Router {
         // 注册的图片验证码
         $app->get("/api/captcha/signup", "Controller\CaptchaController:signup");
 
+        // 找回密码的图片验证码
+        $app->get("/api/captcha/find_pass", "Controller\CaptchaController:find_pass");
+
         // 登录状态检查
         $app->get("/api/state/check", "Controller\StateController:check");
+
+        // 找回密码请求
+        $app->post("/api/find_pass", "Controller\FindPassController:request");
+
+        // 找回密码
+        $app->get("/api/find_pass/reset", "Controller\FindPassController:showReset");
+
+        // 找回密码处理
+        $app->post("/api/reset_pass", "Controller\FindPassController:reset");
 
 
         /******************************************************************************/

@@ -11,6 +11,7 @@ use Horn\Exception;
 use Horn\WrongArgException;
 use Horn\MissingArgException;
 use Horn\NeedTipException;
+use Horn\Mail;
 
 class SignupController {
     protected $ci;
@@ -66,9 +67,13 @@ class SignupController {
             throw new WrongArgException("验证码错误");
         }
 
+        $comName = $req->getParam("com_name");
         $email = $req->getParam("email");
         $pass = $req->getParam("pass");
         
+        if($comName == '') {
+            throw new MissingArgException("请输入公司／团队名称");
+        }
         if($email == '') {
             throw new MissingArgException("请输入邮箱");
         }
@@ -92,11 +97,18 @@ class SignupController {
             }
         }
 
-        $this->ci->staff->create(0, ['email' => $email, 'pass' => $pass]);
+        $company = $this->ci->company->findByName($comName);
+        if($company) {
+            throw new NeedTipException("该公司／团队已经被注册，需要加入该公司／团队，请联系负责人开通帐号");
+        }
+
+        $cid = $this->ci->company->create($comName);
+
+        $uid = $this->ci->staff->create($cid, ['email' => $email, 'pass' => $pass]);
 
         $_SESSION['signup_email'] = $email;
 
-        $this->ci->mail->push($email, "signup", "");
+        $this->ci->mail->push($email, Mail::SIGNUP, "");
         return $rsp->withJson(Util::BeJson('注册成功', 0));
     }
 }

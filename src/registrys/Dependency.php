@@ -81,6 +81,12 @@ class Dependency {
             return $staff;
         };
 
+        // 公司类
+        $container['company'] = function(ContainerInterface $c) {
+            $company = new Horn\Company($c->db);
+            return $company;
+        };
+
         // nsq队列操作类
         $container['queue'] = function(ContainerInterface $c) {
             $queue = new Horn\Queue($c->logger, "http://127.0.0.1:4151");

@@ -5,6 +5,9 @@ use Psr\Log\LoggerInterface;
 
 class Mail {
 
+    const SIGNUP = 'signup';
+    const FIND_PASS = 'find_pass';
+
     private $logger;
     private $queue;
 
@@ -23,7 +26,7 @@ class Mail {
 
         $this->logger->info(" -> payload: [$payload]");
 
-        $res = $this->queue->push(Queue::TOPIC_SIGNUP_EMAIL, "#g".$payload);
+        $res = $this->queue->push(Queue::TOPIC_SEND_EMAIL, "#g".$payload);
 
     }
 
