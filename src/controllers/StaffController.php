@@ -20,6 +20,7 @@ class StaffController {
             $staffId = $staff["staff_id"];
             $cid = $staff["cid"];
             $trackId = date("YmdHis").$staffId.Util::randStr(16);
+            $company = $this->ci->company->findById($cid);
 
             return $rsp->withJson(array(
                 "code" => 0,
@@ -27,7 +28,8 @@ class StaffController {
                 "cid" => $cid,
                 "staff_id" => $staffId,
                 "track_id" => $trackId,
-                "staff" => $staff
+                "staff" => $staff,
+                "company" => $company
             ));
         }
 

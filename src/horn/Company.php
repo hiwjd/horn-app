@@ -19,4 +19,9 @@ class Company {
         $sql = "insert into company(code,name,email) values(?,?,?)";
         return $this->db->Insert($sql, array($code, $name, $email));
     }
+
+    public function findById($cid) {
+        $sql = "select * from company where cid = ?";
+        return $this->db->GetRow($sql, array($cid));
+    }
 }
