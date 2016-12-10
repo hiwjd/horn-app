@@ -16,17 +16,17 @@ class HeartbeatController {
 
     // 心跳
     public function heartbeat(Request $req, Response $rsp, $args) {
-        $cid = $req->getParam("cid");
+        $oid = $req->getParam("oid");
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
-        $trackId = $req->getParam("track_id");
+        $tid = $req->getParam("tid");
         $interval = $req->getParam("interval", 30);
         $tolerance = $req->getParam("tolerance", 3);
 
         if(!$this->ci->store->checkTimeout($uid, $interval, $tolerance)) {
             $arr = array(
                 "type" => "timeout",
-                "cid" => $cid,
+                "oid" => $oid,
                 "uid" => $uid
             );
             $arr["mid"] = IdGen::next(); // 先生成消息ID

@@ -61,17 +61,20 @@ class Store {
     // 获取用户当下的状态数据
     // 对话，
     public function getState($uid) {
-        $chats = $this->db->GetRows("select c.*,c.chat_id as id from chat_user cu left join chats c on cu.chat_id=c.chat_id where cu.uid=? and c.state='active'", array($uid));
+        $chats = $this->db->GetRows("select c.*,c.cid as id from chat_user cu left join chats c on cu.cid=c.cid where cu.uid=? and c.state='active'", array($uid));
         //$chats = $this->redis->smembers("user-chats-$uid");
         $version = $this->redis->get("state-version-$uid");
 
         if(is_array($chats)) {
             foreach($chats as &$chat) {
-                $chatId = $chat["chat_id"];
+                $chatId = $chat["cid"];
 
                 Util::formatChat($chat);
 
-                $msgs = $this->db->GetRows("select * from messages where chat_id = ? order by mid desc limit 30", array($chatId));
+                $msgs = $this->db->GetRows("select * from messages where cid = ? order by mid desc limit 30", array($chatId));
+                if(!is_array($msgs)){
+                    $msgs=array();
+                }
                 $msgs = array_reverse($msgs);
                 foreach($msgs as &$msg) {
                     Util::formatMessage($msg);
@@ -98,19 +101,19 @@ class Store {
         return $uid;
     }
 
-    public function getOnlineUsers($cid) {
-        $sql = "select u.*,pv.* from users u left join page_views pv on u.track_id = pv.track_id where u.cid = ? and u.state = 'on'";
-        return $this->db->GetRows($sql, array($cid));
+    public function getOnlineUsers($oid) {
+        $sql = "select v.*,pv.* from visitors v left join page_views pv on v.tid = pv.tid where v.oid = ? and v.state = 'on'";
+        return $this->db->GetRows($sql, array($oid));
     }
 
-    public function getOnlineStaff($cid) {
-        $sql = "select * from staff where cid = ? and state = 'on'";
-        return $this->db->GetRows($sql, array($cid));
+    public function getOnlineStaff($oid) {
+        $sql = "select * from staff where oid = ? and state = 'on'";
+        return $this->db->GetRows($sql, array($oid));
     }
 
     public function staffSignin($staff) {
-        $sql = "update staff set state='on' where staff_id=?";
-        return $this->db->Exec($sql, array($staff["staff_id"]));
+        $sql = "update staff set state='on' where sid=?";
+        return $this->db->Exec($sql, array($staff["sid"]));
     }
 
     /**

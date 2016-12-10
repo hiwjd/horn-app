@@ -24,6 +24,11 @@ class Chat {
             throw new WrongArgException("消息格式无法解析");
         }
 
+        if(!isset($arr["oid"])) {
+            throw new WrongArgException("消息缺少组织ID");
+        }
+        $arr["oid"] = intval($arr["oid"]);
+
         if(!isset($arr["type"])) {
             throw new WrongArgException("消息缺少类型");
         }
@@ -56,7 +61,7 @@ class Chat {
                     throw new WrongArgException("缺少[event.uids]");
                 }
                 $arr["event"]["chat"] = array(
-                    "id" => IdGen::chatId()
+                    "cid" => IdGen::chatId()
                 );
                 break;
 
@@ -95,9 +100,9 @@ class Chat {
             }
             $arr[] = $cond["mid"];
         }
-        $sql = "select * from messages where chat_id = ? $where limit $limit";
+        $sql = "select * from messages where cid = ? $where limit $limit";
         $rows = $this->db->GetRows($sql, $arr);
-        $tot = $this->db->GetNum("select count(1) from messages where chat_id = ? $where", $arr);
+        $tot = $this->db->GetNum("select count(1) from messages where cid = ? $where", $arr);
 
         return array(
             "data" => $rows,

@@ -35,7 +35,7 @@ class ChatController {
 
         switch ($m["type"]) {
             case "request_chat":
-                $arr["chat_id"] = $m["event"]["chat"]["id"];
+                $arr["cid"] = $m["event"]["chat"]["cid"];
                 break;
             
             default:

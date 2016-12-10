@@ -82,9 +82,9 @@ class Dependency {
         };
 
         // 公司类
-        $container['company'] = function(ContainerInterface $c) {
-            $company = new Horn\Company($c->db);
-            return $company;
+        $container['org'] = function(ContainerInterface $c) {
+            $org = new Horn\Org($c->db);
+            return $org;
         };
 
         // nsq队列操作类

@@ -17,19 +17,19 @@ class StaffController {
     public function info(Request $req, Response $rsp, $args) {
         if(isset($_SESSION['staff']) && is_array($_SESSION['staff'])) {
             $staff = $_SESSION["staff"];
-            $staffId = $staff["staff_id"];
-            $cid = $staff["cid"];
-            $trackId = date("YmdHis").$staffId.Util::randStr(16);
-            $company = $this->ci->company->findById($cid);
+            $staffId = $staff["sid"];
+            $oid = $staff["oid"];
+            $tid = date("YmdHis").$staffId.Util::randStr(16);
+            $org = $this->ci->org->findById($oid);
 
             return $rsp->withJson(array(
                 "code" => 0,
                 "msg" => "",
-                "cid" => $cid,
-                "staff_id" => $staffId,
-                "track_id" => $trackId,
+                "oid" => $oid,
+                "sid" => $staffId,
+                "tid" => $tid,
                 "staff" => $staff,
-                "company" => $company
+                "org" => $org
             ));
         }
 
@@ -40,8 +40,8 @@ class StaffController {
     }
 
     public function online(Request $req, Response $rsp, $args) {
-        $cid = $req->getParam("cid");
-        $staffs = $this->ci->store->getOnlineStaff($cid);
+        $oid = $req->getParam("oid");
+        $staffs = $this->ci->store->getOnlineStaff($oid);
 
         return $rsp->withJson(array(
             "code" => 0,

@@ -15,7 +15,7 @@ class Staff {
         $this->db = $db;
     }
 
-    public function create($cid, $data) {
+    public function create($oid, $data) {
         $name = isset($data['name']) ? $data['name'] : '';
         $mobile = isset($data['mobile']) ? $data['mobile'] : '';
         $email = isset($data['email']) ? $data['email'] : '';
@@ -23,8 +23,8 @@ class Staff {
         $tel = isset($data['tel']) ? $data['tel'] : '';
         $pass = password_hash($pass, PASSWORD_DEFAULT);
         $staffId = IdGen::staffId();
-        $sql = "insert into staff(staff_id,cid,name,mobile,email,pass,tel)values(?,?,?,?,?,?,?)";
-        $this->db->Exec($sql, array($staffId, $cid, $name, $mobile, $email, $pass, $tel));
+        $sql = "insert into staff(sid,oid,name,mobile,email,pass,tel)values(?,?,?,?,?,?,?)";
+        $this->db->Exec($sql, array($staffId, $oid, $name, $mobile, $email, $pass, $tel));
 
         return $staffId;
     }

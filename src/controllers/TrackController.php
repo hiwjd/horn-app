@@ -21,9 +21,9 @@ class TrackController {
         // 返回这个pusher的地址
         // 客户端后续的消息通过这个pusher得到
         
-        $uid = $req->getParam("uid");
+        $vid = $req->getParam("vid");
         $fp = $req->getParam("fp");
-        $cid = $req->getParam("cid");
+        $oid = $req->getParam("oid");
         $url = $req->getParam("url");
         $title = $req->getParam("title");
         $referer = $req->getParam("referer");
@@ -31,24 +31,24 @@ class TrackController {
         $browser = $req->getParam("browser");
         $ip = $req->getAttribute('ip_address');
 
-        if(!$uid && !$fp) {
+        if(!$vid && !$fp) {
             return $rsp->withJson(array(
                 "code" => 1,
                 "msg" => "缺少必要参数"
             ));
         }
 
-        if(!$uid) {
-            $uid = $this->ci->store->mustGetUid($fp);
+        if(!$vid) {
+            $vid = $this->ci->store->mustGetUid($fp);
         }
-        $trackId = date("YmdHis").$uid.Util::randStr(16);
+        $tid = date("YmdHis").$vid.Util::randStr(16);
         
         // 把访问信息存起来
         $viewData = array(
-            'track_id' => $trackId,
-            'uid' => $uid,
+            'tid' => $tid,
+            'vid' => $vid,
             'fp' => $fp,
-            'cid' => $cid,
+            'oid' => $oid,
             'url' => $url,
             'title' => $title,
             'referer' => $referer,
@@ -62,8 +62,8 @@ class TrackController {
 
         return $rsp->withJson(array(
             "code" => 0,
-            "uid" => $uid,
-            "track_id" => $trackId,
+            "vid" => $vid,
+            "tid" => $tid,
             "fp" => $fp
         ));
     }

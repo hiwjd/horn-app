@@ -15,8 +15,8 @@ class UserController {
     }
 
     public function online(Request $req, Response $rsp, $args) {
-        $cid = $req->getParam("cid");
-        $users = $this->ci->store->getOnlineUsers($cid);
+        $oid = $req->getParam("oid");
+        $users = $this->ci->store->getOnlineUsers($oid);
 
         return $rsp->withJson(array(
             "code" => 0,

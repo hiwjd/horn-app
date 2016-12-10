@@ -17,7 +17,7 @@ class IdGen {
     }
 
     // 公司ID
-    public static function cid() {
+    public static function oid() {
         return Util::randStr(15);
     }
 

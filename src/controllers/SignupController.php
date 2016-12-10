@@ -97,14 +97,14 @@ class SignupController {
             }
         }
 
-        $company = $this->ci->company->findByName($comName);
-        if($company) {
+        $org = $this->ci->org->findByName($comName);
+        if($org) {
             throw new NeedTipException("该公司／团队已经被注册，需要加入该公司／团队，请联系负责人开通帐号");
         }
 
-        $cid = $this->ci->company->create($comName);
+        $oid = $this->ci->org->create($comName);
 
-        $uid = $this->ci->staff->create($cid, ['email' => $email, 'pass' => $pass]);
+        $uid = $this->ci->staff->create($oid, ['email' => $email, 'pass' => $pass]);
 
         $_SESSION['signup_email'] = $email;
 

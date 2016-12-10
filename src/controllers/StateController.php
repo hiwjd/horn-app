@@ -24,7 +24,7 @@ class StateController {
     public function init(Request $req, Response $rsp, $args) {
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
-        $trackId = $req->getParam("track_id");
+        $tid = $req->getParam("tid");
         
         $store = $this->ci->store;
 
@@ -44,7 +44,7 @@ class StateController {
                     "msg" => "分配推送服务器失败",
                     "uid" => $uid,
                     "addr" => $pusherAddr,
-                    "track_id" => $trackId
+                    "tid" => $tid
                 ));
             }
 
@@ -55,7 +55,7 @@ class StateController {
                     "msg" => "加入推送服务器失败",
                     "uid" => $uid,
                     "addr" => $pusherAddr,
-                    "track_id" => $trackId
+                    "tid" => $tid
                 ));
             }
         //}
@@ -64,7 +64,7 @@ class StateController {
             "code" => 0,
             "uid" => $uid,
             "addr" => $pusherAddr,
-            "track_id" => $trackId,
+            "tid" => $tid,
             "state" => $state
         ));
     }
