@@ -58,7 +58,7 @@ class Util {
         $type = $msg["type"];
 
         $msg["from"] = array(
-            "id" => $msg["from_uid"],
+            "uid" => $msg["from_uid"],
             "name" => $msg["from_name"],
             "role" => $msg["from_role"]
         );
@@ -67,9 +67,9 @@ class Util {
         unset($msg["from_role"]);
 
         $msg["chat"] = array(
-            "id" => $msg["chat_id"]
+            "cid" => $msg["cid"]
         );
-        unset($msg["chat_id"]);
+        unset($msg["cid"]);
 
         switch ($type) {
             case "text":

@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
 use Horn\Queue;
+use Horn\IP;
 
 class TrackController {
     protected $ci;
@@ -30,6 +31,8 @@ class TrackController {
         $os = $req->getParam("os");
         $browser = $req->getParam("browser");
         $ip = $req->getAttribute('ip_address');
+        $addrArr = IP::find($ip);
+        $addr = $addrArr[1].$addrArr[2];
 
         if(!$vid && !$fp) {
             return $rsp->withJson(array(
@@ -48,14 +51,14 @@ class TrackController {
             'tid' => $tid,
             'vid' => $vid,
             'fp' => $fp,
-            'oid' => $oid,
+            'oid' => intval($oid),
             'url' => $url,
             'title' => $title,
             'referer' => $referer,
             'os' => $os,
             'browser' => $browser,
             'ip' => $ip,
-            'addr' => ''
+            'addr' => $addr
         );
 
         $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));

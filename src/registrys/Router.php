@@ -91,6 +91,9 @@ class Router {
 
         // 心跳
         $app->get("/api/heartbeat", "Controller\HeartbeatController:heartbeat");
+
+        // 访客访问轨迹
+        $app->get("/api/user/tracks", "Controller\UserController:tracks");
     }
 
 }

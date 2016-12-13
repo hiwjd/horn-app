@@ -15,7 +15,7 @@ class Chat {
         $this->db = $db;
     }
 
-    public function dispatchMsg($body) {
+    public function dispatchMsg($body, $ip, $addr) {
         $this->logger->info("Chat.dispatchMsg: $body");
         $arr = json_decode($body, true);
         $this->logger->info(" -> ".var_export($arr, true));
@@ -28,6 +28,10 @@ class Chat {
             throw new WrongArgException("消息缺少组织ID");
         }
         $arr["oid"] = intval($arr["oid"]);
+
+        if(isset($arr["from"])) {
+            $arr["from"]["oid"] = intval($arr["from"]["oid"]);
+        }
 
         if(!isset($arr["type"])) {
             throw new WrongArgException("消息缺少类型");
@@ -57,20 +61,18 @@ class Chat {
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
-                if(!isset($arr["event"]["uids"])) {
-                    throw new WrongArgException("缺少[event.uids]");
-                }
-                $arr["event"]["chat"] = array(
-                    "cid" => IdGen::chatId()
-                );
+                // if(!isset($arr["event"]["uids"])) {
+                //     throw new WrongArgException("缺少[event.uids]");
+                // }
+                $arr["event"]["chat"]["cid"] = IdGen::chatId();
                 break;
 
             case 'join_chat':
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
-                if(!isset($arr["event"]["chat"])) {
-                    throw new WrongArgException("缺少[event.chat]");
+                if(!isset($arr["event"]["cid"])) {
+                    throw new WrongArgException("缺少[event.cid]");
                 }
                 break;
             

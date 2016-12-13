@@ -4,6 +4,7 @@ namespace Controller;
 use Slim\Container as ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Horn\IP;
 
 class ChatController {
     
@@ -15,6 +16,8 @@ class ChatController {
 
     public function message(Request $req, Response $rsp, $args) {
         $body = $req->getBody();
+        $addrArr = IP::find($ip);
+        $addr = $addrArr[1].$addrArr[2];
         
         // ajax跨域POST时，如果提交的content-type不是application/x-www-form-urlencoded
         // 会被视为preflight请求，这个请求会先发一个OPTIONS请求来试探请求是否被服务端允许
@@ -26,7 +29,7 @@ class ChatController {
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS#Preflighted_requests
         //$body = $req->getParam("d");
         
-        $m = $this->ci->chat->dispatchMsg($body);
+        $m = $this->ci->chat->dispatchMsg($body, $ip, $addr);
         $arr = array(
             "code" => 0,
             "mid" => $m["mid"],

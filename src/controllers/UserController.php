@@ -25,4 +25,16 @@ class UserController {
         ));
     }
 
+    public function tracks(Request $req, Response $rsp, $args) {
+        $oid = $req->getParam("oid");
+        $vid = $req->getParam("vid");
+
+        $tracks = $this->ci->store->getTracks($oid, $vid);
+        return $rsp->withJson(array(
+            "code" => 0,
+            "msg" => "",
+            "data" => $tracks
+        ));
+    }
+
 }

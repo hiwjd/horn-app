@@ -69,7 +69,7 @@ class Store {
             foreach($chats as &$chat) {
                 $chatId = $chat["cid"];
 
-                Util::formatChat($chat);
+                $this->formatChat($chat);
 
                 $msgs = $this->db->GetRows("select * from messages where cid = ? order by mid desc limit 30", array($chatId));
                 if(!is_array($msgs)){
@@ -80,6 +80,12 @@ class Store {
                     Util::formatMessage($msg);
                 }
                 $chat["msgs"] = $msgs;
+
+                $tracks = $this->getTracks($chat["oid"], $chat["vid"]);
+                if(!$tracks) {
+                    $tracks = array();
+                }
+                $chat["tracks"] = $tracks;
             }
         } else {
             $chats = array();
@@ -89,6 +95,15 @@ class Store {
             "chats" => $chats,
             "version" => $version
         );
+    }
+
+    private function formatChat(&$chat) {
+        $tid = $chat["tid"];
+        $pv = $this->db->GetRow("select * from tracks where tid = ?", array($tid));
+        if(!is_array($pv)) {
+            $pv = array();
+        }
+        $chat['track'] = $pv;
     }
 
     public function mustGetUid($fp) {
@@ -102,7 +117,7 @@ class Store {
     }
 
     public function getOnlineUsers($oid) {
-        $sql = "select v.*,pv.* from visitors v left join page_views pv on v.tid = pv.tid where v.oid = ? and v.state = 'on'";
+        $sql = "select v.*,pv.* from visitors v left join tracks pv on v.tid = pv.tid where v.oid = ? and v.state = 'on'";
         return $this->db->GetRows($sql, array($oid));
     }
 
@@ -148,5 +163,10 @@ class Store {
         $this->redis->set($keyTolerance, 0);
 
         return true;
+    }
+
+    public function getTracks($oid, $vid) {
+        $sql = "select * from tracks where oid = ? and vid = ? order by created_at desc limit 5";
+        return $this->db->GetRows($sql, array($oid, $vid));
     }
 }
