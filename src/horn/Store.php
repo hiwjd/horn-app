@@ -98,12 +98,21 @@ class Store {
     }
 
     private function formatChat(&$chat) {
-        $tid = $chat["tid"];
-        $pv = $this->db->GetRow("select * from tracks where tid = ?", array($tid));
-        if(!is_array($pv)) {
-            $pv = array();
+        $oid = $chat["oid"];
+        $vid = $chat["vid"];
+        $sid = $chat["sid"];
+
+        $visitor = $this->db->GetRow("select * from visitors where oid = ? and vid = ?", array($oid, $vid));
+        $chat["visitor"] = $visitor;
+
+        $staff = $this->db->GetRow("select * from staff where oid = ? and sid = ?", array($oid, $sid));
+        $chat["staff"] = $staff;
+
+        $tracks = $this->db->GetRows("select * from tracks where oid = ? and vid = ? order by created_at desc limit 5", array($oid, $vid));
+        if(!is_array($tracks)) {
+            $tracks = array();
         }
-        $chat['track'] = $pv;
+        $chat['tracks'] = $tracks;
     }
 
     public function mustGetUid($fp) {
