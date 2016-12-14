@@ -61,7 +61,7 @@ class TrackController {
             'addr' => $addr
         );
 
-        $this->ci->queue->push(Queue::TOPIC_VIEW_PAGE, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));
+        $this->ci->queue->push(Queue::TOPIC_TRACK, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));
 
         return $rsp->withJson(array(
             "code" => 0,

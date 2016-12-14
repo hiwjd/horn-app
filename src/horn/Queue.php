@@ -7,10 +7,8 @@ use Psr\Log\LoggerInterface;
 class Queue {
 
     const TOPIC_SEND_EMAIL = 'send_email';
-    //const TOPIC_MESSAGE = 'signup_email';
-    //const TOPIC_EVENT = 'signup_email';
     const TOPIC_MESSAGE = 'message';
-    const TOPIC_VIEW_PAGE = 'view_page';
+    const TOPIC_TRACK = 'track';
     const TOPIC_TIMEOUT = 'timeout';
 
     private $logger;

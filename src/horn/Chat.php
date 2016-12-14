@@ -61,13 +61,22 @@ class Chat {
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
-                // if(!isset($arr["event"]["uids"])) {
-                //     throw new WrongArgException("缺少[event.uids]");
-                // }
+                if(!isset($arr["chat"])) {
+                    throw new WrongArgException("缺少[event.chat]");
+                }
                 $arr["event"]["chat"]["cid"] = IdGen::chatId();
                 break;
 
             case 'join_chat':
+                if(!isset($arr["event"])) {
+                    throw new WrongArgException("缺少[event]");
+                }
+                if(!isset($arr["event"]["cid"])) {
+                    throw new WrongArgException("缺少[event.cid]");
+                }
+                break;
+
+            case 'track':
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
