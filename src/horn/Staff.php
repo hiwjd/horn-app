@@ -63,7 +63,7 @@ class Staff {
     }
 
     public function confirmEmail($token) {
-        $sql = "select * from signup_email where token = ? and state = 'valid'";
+        $sql = "select * from email_tokens where intention = 'signup' and token = ? and state = 'valid'";
         $row = $this->db->GetRow($sql, array($token));
         if(!$row) {
             throw new WrongArgException("无效链接");
@@ -76,13 +76,13 @@ class Staff {
         $email = $row["email"];
         $sql = "update staff set status = ?, updated_at = ? where email = ?";
         $this->db->Exec($sql, array(self::ACTIVE, date("Y-m-d H:i:s"), $email));
-        $this->db->Exec("update signup_email set state = 'invalid' where token = ?", array($token));
+        $this->db->Exec("update email_tokens set state = 'invalid' where token = ?", array($token));
 
         return $email;
     }
 
     public function getFindPassByToken($token) {
-        $sql = "select * from find_pass_email where token = ? and state = 'valid'";
+        $sql = "select * from email_tokens where intention = 'resetpass' and token = ? and state = 'valid'";
         $row = $this->db->GetRow($sql, array($token));
         if(!$row) {
             throw new WrongArgException("无效链接");
@@ -102,7 +102,7 @@ class Staff {
         $sql = "update staff set pass = ?, updated_at = ? where email = ?";
         $pass = password_hash($newPass, PASSWORD_DEFAULT);
         $this->db->Exec($sql, array($pass, date("Y-m-d H:i:s"), $email));
-        $this->db->Exec("update find_pass_email set state = 'invalid' where token = ?", array($token));
+        $this->db->Exec("update email_tokens set state = 'invalid' where token = ?", array($token));
 
         return $email;
     }
