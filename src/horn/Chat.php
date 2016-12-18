@@ -33,6 +33,8 @@ class Chat {
             $arr["from"]["oid"] = intval($arr["from"]["oid"]);
         }
 
+        $arr["created_at"] = date("c");
+
         if(!isset($arr["type"])) {
             throw new WrongArgException("消息缺少类型");
         }
@@ -61,9 +63,10 @@ class Chat {
                 if(!isset($arr["event"])) {
                     throw new WrongArgException("缺少[event]");
                 }
-                if(!isset($arr["chat"])) {
+                if(!isset($arr["event"]["chat"])) {
                     throw new WrongArgException("缺少[event.chat]");
                 }
+                $arr["event"]["chat"]["oid"] = intval($arr["event"]["chat"]["oid"]);
                 $arr["event"]["chat"]["cid"] = IdGen::chatId();
                 break;
 

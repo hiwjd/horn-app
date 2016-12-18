@@ -58,7 +58,8 @@ class TrackController {
             'os' => $os,
             'browser' => $browser,
             'ip' => $ip,
-            'addr' => $addr
+            'addr' => $addr,
+            'created_at' => date("c")
         );
 
         $this->ci->queue->push(Queue::TOPIC_TRACK, "#f".json_encode($viewData, JSON_UNESCAPED_UNICODE));

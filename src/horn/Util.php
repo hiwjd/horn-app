@@ -66,13 +66,9 @@ class Util {
         unset($msg["from_name"]);
         unset($msg["from_role"]);
 
-        $msg["chat"] = array(
-            "cid" => $msg["cid"]
-        );
-        unset($msg["cid"]);
-
         switch ($type) {
             case "text":
+                unset($msg["event"]);
                 break;
             case "file":
                 $msg["file"] = array(
