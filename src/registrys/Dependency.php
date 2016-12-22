@@ -119,6 +119,11 @@ class Dependency {
         $container['rpc'] = function(ContainerInterface $c) {
             return new Horn\Rpc($c->logger);
         };
+
+        // 访客标签 
+        $container['tag'] = function(ContainerInterface $c) {
+            return new Horn\Tag($c->logger, $c->db);
+        };
     }
 
 }

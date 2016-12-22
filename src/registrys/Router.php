@@ -5,6 +5,7 @@ use Slim\App;
 use Slim\Container as ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Middleware\LoginCheckMiddleware;
 
 class Router {
 
@@ -83,17 +84,56 @@ class Router {
         // 识别用户身份
         $app->get("/api/user/id", "Controller\IdentityController:identity");
 
-        // 在线用户列表
-        $app->get("/api/users/online", "Controller\UserController:online");
-
         // 在线客服列表
         $app->get("/api/staff/online", "Controller\StaffController:online");
 
         // 心跳
         $app->get("/api/heartbeat", "Controller\HeartbeatController:heartbeat");
 
-        // 访客访问轨迹
-        $app->get("/api/user/tracks", "Controller\UserController:tracks");
+        // 客服 且 需要登录 的接口
+        $app->group("/api/b", function() use ($app) {
+            // 在线用户列表
+            $app->get("/users/online", "Controller\UserController:online");
+
+            // 访客访问轨迹
+            $app->get("/user/tracks", "Controller\UserController:tracks");
+
+            // 获取历史对话
+            $app->get("/history/chats", "Controller\HistoryController:chats");
+
+            // 获取某个对话的详细数据
+            $app->get("/history/chat", "Controller\HistoryController:chat");
+
+            // 获取访客标签
+            $app->get("/visitor/tags", "Controller\TagController:getByVisitor");
+
+            // 添加标签
+            $app->get("/tags", "Controller\TagController:get");
+
+            // 添加标签
+            $app->post("/tag/add", "Controller\TagController:add");
+
+            // 编辑标签
+            $app->post("/tag/edit", "Controller\TagController:edit");
+
+            // 删除标签
+            $app->post("/tag/delete", "Controller\TagController:delete");
+
+            // 贴标签
+            $app->post("/tag/attach", "Controller\TagController:attach");
+
+            // 撕标签
+            $app->post("/tag/detach", "Controller\TagController:detach");
+
+            // 添加访客信息
+            $app->get("/visitor/info/add", "Controller\VisitorInfoController:add");
+
+            // 编辑访客信息
+            $app->get("/visitor/info/edit", "Controller\VisitorInfoController:edit");
+
+            // 删除访客信息
+            $app->get("/visitor/info/remove", "Controller\VisitorInfoController:remove");
+        })->add(new LoginCheckMiddleware());
     }
 
 }

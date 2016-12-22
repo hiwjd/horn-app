@@ -124,6 +124,24 @@ class Chat {
         );
     }
 
+    public function getChatList($cond) {
+        $page = $cond["page"];
+        $size = $cond["size"];
+        $offset = ($page-1)*$size;
+        $sql = "select * from chats where oid = ? order by created_at desc limit $offset,$size";
+        $rows = $this->db->GetRows($sql, array(3));
+        $tot = $this->db->GetNum("select count(1) from chats where oid = ?", array(3));
+
+        return array(
+            "data" => $rows,
+            "tot" => $tot
+        );
+    }
+
+    public function getChat($cid) {
+        ;
+    }
+
     // 推给nsq的消息前面加个前缀，方便消费者在解析json之前就知道是什么类型
     private static function getPrefix($type) {
         $map = array(
