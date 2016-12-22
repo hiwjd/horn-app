@@ -20,6 +20,7 @@ class SignoutController {
         if(isset($_SESSION['staff'])) {
             unset($_SESSION['staff']);
         }
+        session_destroy();
 
         return $rsp->withJson(Util::BeJson('登出', 0));
     }
