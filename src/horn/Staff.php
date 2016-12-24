@@ -2,6 +2,8 @@
 namespace Horn;
 
 use Hashids\Hashids;
+use Horn\Mail;
+use Horn\IdGen;
 
 class Staff {
 
@@ -10,9 +12,11 @@ class Staff {
     const PENDING = 'pending';
 
     private $db;
+    private $mail;
 
-    public function __construct(Db $db) {
+    public function __construct(Db $db, Mail $mail) {
         $this->db = $db;
+        $this->mail = $mail;
     }
 
     public function create($oid, $data) {
@@ -21,10 +25,11 @@ class Staff {
         $email = isset($data['email']) ? $data['email'] : '';
         $pass = isset($data['pass']) ? $data['pass'] : '';
         $tel = isset($data['tel']) ? $data['tel'] : '';
+        $gid = isset($data['gid']) ? $data['gid'] : '';
         $pass = password_hash($pass, PASSWORD_DEFAULT);
         $staffId = IdGen::sid();
-        $sql = "insert into staff(sid,oid,name,mobile,email,pass,tel)values(?,?,?,?,?,?,?)";
-        $this->db->Exec($sql, array($staffId, $oid, $name, $mobile, $email, $pass, $tel));
+        $sql = "insert into staff(sid,oid,name,mobile,email,pass,tel,gid)values(?,?,?,?,?,?,?,?)";
+        $this->db->Exec($sql, array($staffId, $oid, $name, $mobile, $email, $pass, $tel, $gid));
 
         return $staffId;
     }
@@ -112,7 +117,7 @@ class Staff {
         $page = $cond["page"];
         $size = $cond["size"];
         $offset = ($page-1)*$size;
-        $sql = "select sid,oid,name,gender,mobile,email,tel,qq,status,state from staff where oid = ? order by created_at desc limit $offset,$size";
+        $sql = "select sid,oid,name,gender,mobile,email,tel,qq,status,gid,state from staff where oid = ? order by created_at desc limit $offset,$size";
         $rows = $this->db->GetRows($sql, array($oid));
         $total = $this->db->GetNum("select count(1) from staff where oid = ?", array($oid));
 
@@ -123,8 +128,9 @@ class Staff {
     }
 
     public function add($data) {
+        $data["sid"] = IdGen::sid();
         //$this->logger->info("Tag.add oid[$oid] name[$name] color[$color] sid[$sid]");
-        $sql = "insert into staff(sid,oid,name,gender,mobile,email,tel,qq,status) values (?,?,?,?,?,?,?,?,?)";
+        $sql = "insert into staff(sid,oid,name,gender,mobile,email,tel,qq,status,gid) values (?,?,?,?,?,?,?,?,?,?)";
         if($this->db->Exec($sql, array(
             $data["sid"],
             $data["oid"],
@@ -134,9 +140,11 @@ class Staff {
             $data["email"],
             $data["tel"],
             $data["qq"],
-            $data["status"]
+            $data["status"],
+            $data["gid"]
         )) == 1) {
             //$this->logger->info(" -> 成功");
+            $this->mail->push($data["email"], Mail::SIGNUP, "");
             return true;
         }
 
@@ -150,7 +158,7 @@ class Staff {
         unset($data["oid"]);
         unset($data["sid"]);
 
-        $fields = ["name","gender","mobile","email","tel","qq","status"];
+        $fields = ["name","gender","mobile","email","tel","qq","status","gid"];
         $arr = array();
         $vArr = array();
         foreach($data as $k => $v) {

@@ -6,7 +6,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Horn\Util;
 use Horn\Queue;
-use Horn\IdGen;
 use Horn\MissingArgException;
 
 class StaffController {
@@ -86,9 +85,7 @@ class StaffController {
         if($sid != "") {
             $this->ci->staff->edit($data);
         } else {
-            $sid = IdGen::sid();
-            $data["sid"] = $sid;
-            $this->ci->staff->add($data);
+            $sid = $this->ci->staff->add($data);
         }
 
         return $rsp->withJson(array(

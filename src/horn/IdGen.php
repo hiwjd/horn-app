@@ -35,4 +35,8 @@ class IdGen {
     public static function chatId() {
         return Util::randStr(25);
     }
+
+    public static function gid() {
+        return Util::randStr(27);
+    }
 }

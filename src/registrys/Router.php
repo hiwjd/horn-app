@@ -148,6 +148,12 @@ class Router {
 
             // 修改访客信息
             $app->post("/visitor/edit", "Controller\VisitorController:edit");
+
+            // 获取客服分组列表
+            $app->get("/groups", "Controller\GroupController:get");
+
+            // 获取客服分组列表
+            $app->post("/group/save", "Controller\GroupController:save");
         })->add(new LoginCheckMiddleware());
     }
 

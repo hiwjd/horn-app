@@ -77,7 +77,7 @@ class Dependency {
 
         // 客服类
         $container['staff'] = function(ContainerInterface $c) {
-            $staff = new Horn\Staff($c->db);
+            $staff = new Horn\Staff($c->db, $c->mail);
             return $staff;
         };
 
@@ -128,6 +128,11 @@ class Dependency {
         // 访客
         $container['visitor'] = function(ContainerInterface $c) {
             return new Horn\Visitor($c->logger, $c->db);
+        };
+
+        // 客服分组
+        $container['group'] = function(ContainerInterface $c) {
+            return new Horn\Group($c->logger, $c->db);
         };
     }
 

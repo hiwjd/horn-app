@@ -85,7 +85,7 @@ class SignupController {
         if($staff) {
             switch($staff['status']) {
                 case Staff::PENDING:
-                    $this->ci->mail->push($email, "signup", "");
+                    $this->ci->mail->push($email, Mail::SIGNUP, "");
                     throw new NeedTipException("重新发送了确认邮件");
                 break;
                 case Staff::ACTIVE:
@@ -103,8 +103,8 @@ class SignupController {
         }
 
         $oid = $this->ci->org->create($comName);
-
-        $uid = $this->ci->staff->create($oid, ['email' => $email, 'pass' => $pass]);
+        $gid = $this->ci->group->add($oid, "默认分组");
+        $uid = $this->ci->staff->create($oid, ['email' => $email, 'pass' => $pass, 'gid' => $gid]);
 
         $_SESSION['signup_email'] = $email;
 
