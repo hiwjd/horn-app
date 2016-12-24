@@ -22,6 +22,7 @@ class StateController {
     }
 
     public function init(Request $req, Response $rsp, $args) {
+        $oid = $req->getParam("oid");
         $uid = $req->getParam("uid");
         $fp = $req->getParam("fp");
         $tid = $req->getParam("tid");
@@ -29,7 +30,7 @@ class StateController {
         $store = $this->ci->store;
 
         // 获取状态数据
-        $state = $store->getState($uid);
+        $state = $store->getState($oid, $uid);
 
         // 查看uid有没有分配过pusher
         // 如果已经分配过pusher那么直接使用这个pusher

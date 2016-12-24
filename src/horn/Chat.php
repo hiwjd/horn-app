@@ -66,6 +66,23 @@ class Chat {
                 if(!isset($arr["event"]["chat"])) {
                     throw new WrongArgException("缺少[event.chat]");
                 }
+                if(!isset($arr["event"]["chat"]["sid"])) {
+                    throw new WrongArgException("缺少[event.chat.sid]");
+                }
+
+                // 如果sid以#开头，说明是分组ID
+                // 从分组中分配一个可以接待对话的客服
+                $sid = $arr["event"]["chat"]["sid"];
+                if(substr($sid, 0, 1) == "#") {
+                    $gid = substr($sid, 1);
+                    $oid = $arr["event"]["chat"]["oid"];
+                    $sid = $this->GetAvaiableSidByGid($oid, $gid);
+                    if(!$sid) {
+                        throw new Exception("暂时没有能接待的客服", 303);
+                    }
+                    $arr["event"]["chat"]["sid"] = $sid;
+                }
+
                 $arr["event"]["chat"]["oid"] = intval($arr["event"]["chat"]["oid"]);
                 $arr["event"]["chat"]["cid"] = IdGen::chatId();
                 break;
@@ -125,12 +142,13 @@ class Chat {
     }
 
     public function getChatList($cond) {
+        $oid = $cond["oid"];
         $page = $cond["page"];
         $size = $cond["size"];
         $offset = ($page-1)*$size;
         $sql = "select * from chats where oid = ? order by created_at desc limit $offset,$size";
-        $rows = $this->db->GetRows($sql, array(3));
-        $total = $this->db->GetNum("select count(1) from chats where oid = ?", array(3));
+        $rows = $this->db->GetRows($sql, array($oid));
+        $total = $this->db->GetNum("select count(1) from chats where oid = ?", array($oid));
 
         return array(
             "data" => $rows,
@@ -140,6 +158,11 @@ class Chat {
 
     public function getChat($cid) {
         ;
+    }
+
+    private function GetAvaiableSidByGid($oid, $gid) {
+        $sql = "select sid from staff where oid = ? and state = 'on' and gid = ? and ccn > ccn_cur order by updated_at asc limit 1";
+        return $this->db->GetStr($sql, array($oid, $gid));
     }
 
     // 推给nsq的消息前面加个前缀，方便消费者在解析json之前就知道是什么类型

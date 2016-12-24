@@ -112,7 +112,7 @@ class Dependency {
 
         // 状态存取
         $container['store'] = function(ContainerInterface $c) {
-            return new Horn\Store($c->logger, $c->redis, $c->db);
+            return new Horn\Store($c->logger, $c->redis, $c->db, "");
         };
 
         // 远程调用类

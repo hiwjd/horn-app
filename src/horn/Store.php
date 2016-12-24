@@ -3,6 +3,7 @@ namespace Horn;
 
 use Psr\Log\LoggerInterface;
 use Predis\Client;
+use GuzzleHttp;
 
 // 状态数据
 // 如果要统一状态数据的管理 可以都集中到一个服务里去，背后用codis
@@ -15,11 +16,15 @@ class Store {
     private $logger;
     private $redis;
     private $db;
+    private $host;
+    private $client;
 
-    public function __construct(LoggerInterface $logger, Client $redis, Db $db) {
+    public function __construct(LoggerInterface $logger, Client $redis, Db $db, $host) {
         $this->logger = $logger;
         $this->redis = $redis;
         $this->db = $db;
+        $this->host = $host;
+        $this->client = new GuzzleHttp\Client();
     }
 
     // 根据用户ID获取到分配给该用户的推送服务器地址
@@ -60,10 +65,13 @@ class Store {
 
     // 获取用户当下的状态数据
     // 对话，
-    public function getState($uid) {
-        $chats = $this->db->GetRows("select c.*,c.cid as id from chat_user cu left join chats c on cu.cid=c.cid where cu.uid=? and c.state='active'", array($uid));
+    public function getState($oid, $uid) {
+        $chats = $this->db->GetRows("select c.*,c.cid as id from chat_user cu left join chats c on cu.cid=c.cid where cu.oid=? and cu.uid=? and c.state='active'", array($oid, $uid));
         //$chats = $this->redis->smembers("user-chats-$uid");
         $version = $this->redis->get("state-version-$uid");
+        if(!$version) {
+            $version = "";
+        }
 
         if(is_array($chats)) {
             foreach($chats as &$chat) {
@@ -177,5 +185,57 @@ class Store {
     public function getTracks($oid, $vid) {
         $sql = "select * from tracks where oid = ? and vid = ? order by created_at desc limit 5";
         return $this->db->GetRows($sql, array($oid, $vid));
+    }
+
+    private function get($path, $query) {
+        $this->logger->info("State.get path[$path] query[".var_export($query, true)."]");
+        $url = "http://".$this->host.$path;
+        $options = array(
+            "query" => $query
+        );
+        $this->logger->info(" -> url[$url] options[".var_export($options, true)."]");
+
+        try {
+            $res = $this->client->request("GET", $url, $options);
+        } catch(GuzzleHttp\Exception\BadResponseException $e) {
+            $this->logger->error(" -> BadResponseException err: ".$e->getMessage());
+            $res = $e->getResponse();
+        } catch(GuzzleHttp\Exception\ConnectException $e) {
+            $this->logger->error(" -> ConnectException err: ".$e->getMessage());
+            return false;
+        }
+
+        return $res;
+        
+        // $body = $res->getBody()->getContents();
+        // $this->logger->info(" -> body[$body]");
+
+        // return $body;
+    }
+
+    private function post($path, $post) {
+        $this->logger->info("State.get path[$path] post[".var_export($post, true)."]");
+        $url = "http://".$this->host.$path;
+        $options = array(
+            "form_params" => $post
+        );
+        $this->logger->info(" -> url[$url] options[".var_export($options, true)."]");
+
+        try {
+            $res = $this->client->request("POST", $url, $options);
+        } catch(GuzzleHttp\Exception\BadResponseException $e) {
+            $this->logger->error(" -> BadResponseException err: ".$e->getMessage());
+            $res = $e->getResponse();
+        } catch(GuzzleHttp\Exception\ConnectException $e) {
+            $this->logger->error(" -> ConnectException err: ".$e->getMessage());
+            return false;
+        }
+
+        return $res;
+        
+        // $body = $res->getBody()->getContents();
+        // $this->logger->info(" -> body[$body]");
+
+        // return $body;
     }
 }
