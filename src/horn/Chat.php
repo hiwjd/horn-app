@@ -130,11 +130,11 @@ class Chat {
         $offset = ($page-1)*$size;
         $sql = "select * from chats where oid = ? order by created_at desc limit $offset,$size";
         $rows = $this->db->GetRows($sql, array(3));
-        $tot = $this->db->GetNum("select count(1) from chats where oid = ?", array(3));
+        $total = $this->db->GetNum("select count(1) from chats where oid = ?", array(3));
 
         return array(
             "data" => $rows,
-            "tot" => $tot
+            "total" => $total
         );
     }
 

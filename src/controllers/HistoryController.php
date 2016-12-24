@@ -37,7 +37,7 @@ class HistoryController {
             "code" => 0,
             "msg" => "ok",
             "data" => $r["data"],
-            "total" => $r["tot"]
+            "total" => $r["total"]
         ));
     }
 
