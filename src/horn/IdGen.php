@@ -22,7 +22,7 @@ class IdGen {
     }
 
     // 客服ID
-    public static function staffId() {
+    public static function sid() {
         return Util::randStr(19);
     }
 

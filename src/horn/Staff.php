@@ -22,7 +22,7 @@ class Staff {
         $pass = isset($data['pass']) ? $data['pass'] : '';
         $tel = isset($data['tel']) ? $data['tel'] : '';
         $pass = password_hash($pass, PASSWORD_DEFAULT);
-        $staffId = IdGen::staffId();
+        $staffId = IdGen::sid();
         $sql = "insert into staff(sid,oid,name,mobile,email,pass,tel)values(?,?,?,?,?,?,?)";
         $this->db->Exec($sql, array($staffId, $oid, $name, $mobile, $email, $pass, $tel));
 
@@ -105,5 +105,81 @@ class Staff {
         $this->db->Exec("update email_tokens set state = 'invalid' where token = ?", array($token));
 
         return $email;
+    }
+
+    public function getList($cond) {
+        $oid = $cond["oid"];
+        $page = $cond["page"];
+        $size = $cond["size"];
+        $offset = ($page-1)*$size;
+        $sql = "select sid,oid,name,gender,mobile,email,tel,qq,status,state from staff where oid = ? order by created_at desc limit $offset,$size";
+        $rows = $this->db->GetRows($sql, array($oid));
+        $total = $this->db->GetNum("select count(1) from staff where oid = ?", array($oid));
+
+        return array(
+            "data" => $rows,
+            "total" => $total
+        );
+    }
+
+    public function add($data) {
+        //$this->logger->info("Tag.add oid[$oid] name[$name] color[$color] sid[$sid]");
+        $sql = "insert into staff(sid,oid,name,gender,mobile,email,tel,qq,status) values (?,?,?,?,?,?,?,?,?)";
+        if($this->db->Exec($sql, array(
+            $data["sid"],
+            $data["oid"],
+            $data["name"],
+            $data["gender"],
+            $data["mobile"],
+            $data["email"],
+            $data["tel"],
+            $data["qq"],
+            $data["status"]
+        )) == 1) {
+            //$this->logger->info(" -> 成功");
+            return true;
+        }
+
+        //$this->logger->info(" -> 失败");
+        throw new Exception("添加失败", 500);
+    }
+
+    public function edit($data) {
+        $oid = $data["oid"];
+        $sid = $data["sid"];
+        unset($data["oid"]);
+        unset($data["sid"]);
+
+        $fields = ["name","gender","mobile","email","tel","qq","status"];
+        $arr = array();
+        $vArr = array();
+        foreach($data as $k => $v) {
+            if(in_array($k, $fields)) {
+                $arr[] = "$k=?";
+                $vArr[] = $v;
+            }
+        }
+        $upsql = implode(",", $arr);
+        $vArr[] = $oid;
+        $vArr[] = $sid;
+        //$this->logger->info("Tag.edit oid[$oid] tagId[$tagId] color[$color]");
+        $sql = "update staff set $upsql where oid = ? and sid = ?";
+        if($this->db->Exec($sql, $vArr) >= 0) {
+            //$this->logger->info(" -> 成功");
+            return true;
+        }
+
+        //$this->logger->info(" -> 失败");
+        throw new Exception("编辑失败", 500);
+    }
+
+    public function editpwd($oid, $sid, $pwd) {
+        $pass = password_hash($pwd, PASSWORD_DEFAULT);
+        $sql = "update staff set pass = ? where oid = ? and sid = ?";
+        if($this->db->Exec($sql, array($pass, $oid, $sid)) >= 0) {
+            return true;
+        }
+
+        throw new Exception("修改密码失败", 500);
     }
 }

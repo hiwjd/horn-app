@@ -38,7 +38,6 @@ class TagController
     public function add(Request $req, Response $rsp, $args)
     {
         $oid = $req->getParam("oid");
-        $vid = $req->getParam("vid");
         $name = $req->getParam("name");
         $color = $req->getParam("color");
 
@@ -52,13 +51,30 @@ class TagController
     public function edit(Request $req, Response $rsp, $args)
     {
         $oid = $req->getParam("oid");
-        $tagId = $req->getParam("tag_id");
         $name = $req->getParam("name");
         $color = $req->getParam("color");
+        $tagId = $req->getParam("tag_id");
 
         $this->ci->tag->edit($oid, $tagId, $name, $color);
 
         return $rsp->withJson(Util::BeJson('编辑成功', 200));
+    }
+
+    public function save(Request $req, Response $rsp, $args)
+    {
+        $oid = $req->getParam("oid");
+        $name = $req->getParam("name");
+        $color = $req->getParam("color");
+        $tagId = $req->getParam("tag_id");
+        $sid = $req->getAttribute("sid");
+
+        if($tagId > 0) {
+            $this->ci->tag->edit($oid, $tagId, $name, $color);
+        } else {
+            $this->ci->tag->add($oid, $name, $color, $sid);
+        }
+
+        return $rsp->withJson(Util::BeJson('保存成功', 200));
     }
 
     public function delete(Request $req, Response $rsp, $args)

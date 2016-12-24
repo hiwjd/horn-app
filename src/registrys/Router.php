@@ -110,6 +110,9 @@ class Router {
             // 添加标签
             $app->get("/tags", "Controller\TagController:get");
 
+            // 保存标签 新增／修改
+            $app->post("/tag/save", "Controller\TagController:save");
+
             // 添加标签
             $app->post("/tag/add", "Controller\TagController:add");
 
@@ -133,6 +136,15 @@ class Router {
 
             // 删除访客信息
             $app->get("/visitor/info/remove", "Controller\VisitorInfoController:remove");
+
+            // 客服列表
+            $app->get("/staffs", "Controller\StaffController:get");
+
+            // 保存客服 新增／修改
+            $app->post("/staff/save", "Controller\StaffController:save");
+
+            // 修改密码
+            $app->post("/staff/editpwd", "Controller\StaffController:editpwd");
         })->add(new LoginCheckMiddleware());
     }
 
