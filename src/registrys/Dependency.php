@@ -124,6 +124,11 @@ class Dependency {
         $container['tag'] = function(ContainerInterface $c) {
             return new Horn\Tag($c->logger, $c->db);
         };
+
+        // 访客
+        $container['visitor'] = function(ContainerInterface $c) {
+            return new Horn\Visitor($c->logger, $c->db);
+        };
     }
 
 }

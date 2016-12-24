@@ -145,6 +145,9 @@ class Router {
 
             // 修改密码
             $app->post("/staff/editpwd", "Controller\StaffController:editpwd");
+
+            // 修改访客信息
+            $app->post("/visitor/edit", "Controller\VisitorController:edit");
         })->add(new LoginCheckMiddleware());
     }
 
