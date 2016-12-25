@@ -77,7 +77,7 @@ class Store {
             foreach($chats as &$chat) {
                 $chatId = $chat["cid"];
 
-                $this->formatChat($chat);
+                Chat::formatChat($this->db, $chat);
 
                 $msgs = $this->db->GetRows("select * from messages where cid = ? order by mid desc limit 30", array($chatId));
                 if(!is_array($msgs)){
@@ -85,11 +85,11 @@ class Store {
                 }
                 $msgs = array_reverse($msgs);
                 foreach($msgs as &$msg) {
-                    Util::formatMessage($msg);
+                    Chat::formatMessage($msg);
                 }
                 $chat["msgs"] = $msgs;
 
-                $tracks = $this->getTracks($chat["oid"], $chat["vid"]);
+                $tracks = Chat::getTracks($this->db, $chat["oid"], $chat["vid"]);
                 if(!$tracks) {
                     $tracks = array();
                 }
@@ -105,23 +105,23 @@ class Store {
         );
     }
 
-    private function formatChat(&$chat) {
-        $oid = $chat["oid"];
-        $vid = $chat["vid"];
-        $sid = $chat["sid"];
+    // private function formatChat(&$chat) {
+    //     $oid = $chat["oid"];
+    //     $vid = $chat["vid"];
+    //     $sid = $chat["sid"];
 
-        $visitor = $this->db->GetRow("select * from visitors where oid = ? and vid = ?", array($oid, $vid));
-        $chat["visitor"] = $visitor;
+    //     $visitor = $this->db->GetRow("select * from visitors where oid = ? and vid = ?", array($oid, $vid));
+    //     $chat["visitor"] = $visitor;
 
-        $staff = $this->db->GetRow("select * from staff where oid = ? and sid = ?", array($oid, $sid));
-        $chat["staff"] = $staff;
+    //     $staff = $this->db->GetRow("select * from staff where oid = ? and sid = ?", array($oid, $sid));
+    //     $chat["staff"] = $staff;
 
-        $tracks = $this->db->GetRows("select * from tracks where oid = ? and vid = ? order by created_at desc limit 5", array($oid, $vid));
-        if(!is_array($tracks)) {
-            $tracks = array();
-        }
-        $chat['tracks'] = $tracks;
-    }
+    //     $tracks = $this->db->GetRows("select * from tracks where oid = ? and vid = ? order by created_at desc limit 5", array($oid, $vid));
+    //     if(!is_array($tracks)) {
+    //         $tracks = array();
+    //     }
+    //     $chat['tracks'] = $tracks;
+    // }
 
     public function mustGetUid($fp) {
         $uid = $this->getUidByFP($fp);
@@ -180,11 +180,6 @@ class Store {
         $this->redis->set($keyTolerance, 0);
 
         return true;
-    }
-
-    public function getTracks($oid, $vid) {
-        $sql = "select * from tracks where oid = ? and vid = ? order by created_at desc limit 5";
-        return $this->db->GetRows($sql, array($oid, $vid));
     }
 
     private function get($path, $query) {

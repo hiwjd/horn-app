@@ -49,56 +49,5 @@ class Util {
         }
         return $rand;
     }
-
-    public static function formatChat(&$chat) {
-        ;
-    }
-
-    public static function formatMessage(&$msg) {
-        $type = $msg["type"];
-
-        $msg["from"] = array(
-            "uid" => $msg["from_uid"],
-            "name" => $msg["from_name"],
-            "role" => $msg["from_role"]
-        );
-        unset($msg["from_uid"]);
-        unset($msg["from_name"]);
-        unset($msg["from_role"]);
-
-        switch ($type) {
-            case "text":
-                unset($msg["event"]);
-                break;
-            case "file":
-                $msg["file"] = array(
-                    "name" => $msg["name"],
-                    "src" => $msg["src"],
-                    "size" => $msg["size"]
-                );
-                break;
-            case "image":
-                $msg["image"] = array(
-                    "src" => $msg["src"],
-                    "width" => $msg["width"],
-                    "height" => $msg["height"],
-                    "size" => $msg["size"]
-                );
-                break;
-            case "request_chat":
-            case "join_chat":
-                $msg["event"] = json_decode($msg["event"]);
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-
-        unset($msg["name"]);
-        unset($msg["src"]);
-        unset($msg["width"]);
-        unset($msg["height"]);
-        unset($msg["size"]);
-    }
+    
 }

@@ -15,7 +15,8 @@ class HistoryController {
     }
 
     public function chats(Request $req, Response $rsp, $args) {
-        $oid = 3;//$req->getParam("chat_id");
+        //$oid = 3;//$req->getParam("chat_id");
+        $oid = $req->getParam("oid");
         $size = $req->getParam("size", 10);
         $page = $req->getParam("page", 1);
         $direction = $req->getParam("direction", "prev"); // prev: 往老的翻 next: 往新的翻
@@ -42,16 +43,12 @@ class HistoryController {
     }
 
     public function chat(Request $req, Response $rsp, $args) {
-        $oid = 3;
+        $oid = $req->getParam("oid");
         $cid = $req->getParam("cid");
 
-        $r = $this->ci->chat->getChat($cid);
+        $chat = $this->ci->chat->getChat($oid, $cid);
 
-        return $rsp->withJson(array(
-            "code" => 0,
-            "msg" => "ok",
-            "data" => $r
-        ));
+        return $rsp->withJson($chat);
     }
 
 }
