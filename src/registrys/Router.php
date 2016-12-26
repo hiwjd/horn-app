@@ -87,6 +87,9 @@ class Router {
         // 心跳
         $app->get("/api/heartbeat", "Controller\HeartbeatController:heartbeat");
 
+        // 获取七牛上传凭证
+        $app->get("/api/uptoken", "Controller\QiniuController:uptoken");
+
         // 客服 且 需要登录 的接口
         $app->group("/api/b", function() use ($app) {
             // 在线用户列表
