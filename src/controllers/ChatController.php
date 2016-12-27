@@ -16,6 +16,7 @@ class ChatController {
 
     public function message(Request $req, Response $rsp, $args) {
         $body = $req->getBody();
+        $ip = $req->getAttribute('ip_address');
         $addrArr = IP::find($ip);
         $addr = $addrArr[1].$addrArr[2];
         
