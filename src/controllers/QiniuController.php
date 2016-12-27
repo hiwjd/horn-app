@@ -32,4 +32,12 @@ class QiniuController
         ));
     }
 
+    public function uptoken_options(Request $req, Response $rsp, $args)
+    {
+        return $rsp->withHeader("Access-Control-Allow-Origin", "*")
+                ->withHeader("Access-Control-Allow-Methods", "GET,OPTIONS")
+                ->withHeader("Access-Control-Allow-Headers", "content-type")
+                ->withHeader("Access-Control-Allow-Headers", "If-Modified-Since");
+    }
+
 }

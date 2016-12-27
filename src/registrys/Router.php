@@ -90,6 +90,9 @@ class Router {
         // 获取七牛上传凭证
         $app->get("/api/uptoken", "Controller\QiniuController:uptoken");
 
+        // 获取七牛上传凭证
+        $app->options("/api/uptoken", "Controller\QiniuController:uptoken_options");
+
         // 客服 且 需要登录 的接口
         $app->group("/api/b", function() use ($app) {
             // 在线用户列表
