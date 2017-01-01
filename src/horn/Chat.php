@@ -2,17 +2,20 @@
 namespace Horn;
 
 use Psr\Log\LoggerInterface;
+use Predis\Client as Redis;
 
 class Chat {
 
     private $logger;
     private $queue;
     private $db;
+    private $redis;
 
-    public function __construct(LoggerInterface $logger, Queue $queue, Db $db) {
+    public function __construct(LoggerInterface $logger, Queue $queue, Db $db, Redis $redis) {
         $this->logger = $logger;
         $this->queue = $queue;
         $this->db = $db;
+        $this->redis = $redis;
     }
 
     public function dispatchMsg($body, $ip, $addr) {

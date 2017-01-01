@@ -107,7 +107,7 @@ class Dependency {
 
         // 对话类
         $container['chat'] = function(ContainerInterface $c) {
-            $mail = new Horn\Chat($c->logger, $c->queue, $c->db2);
+            $mail = new Horn\Chat($c->logger, $c->queue, $c->db2, $c->redis);
             return $mail;
         };
 

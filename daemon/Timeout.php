@@ -1,12 +1,17 @@
 <?php
 require __DIR__ . '/../vendor/autoload.php';
 
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+use Horn\IdGen;
+use Horn\Queue;
+
 $logger = new Logger('app');
 $logger->pushHandler(new StreamHandler('/home/horn/horn-app/logs/app-'.date('Y-m-d').'.log', Logger::DEBUG));
 $queue = new Horn\Queue($logger, "http://127.0.0.1:4151");
-$redis = new \Predis\Client();
+$redis = new Predis\Client();
 
-function checkAndNotify() {
+function checkAndNotify($logger, $queue, $redis) {
     $logger->info("checkAndNotify");
 
     $msgs = array();
@@ -27,6 +32,9 @@ function checkAndNotify() {
                 "uid" => $user["uid"]
             );
         }
+
+        array_unshift($arr, "LMT_TIMEOUT");
+        call_user_func_array(array($redis, "zrem"), $arr);
     }
 
     $t = time() - 100; // 100秒没有心跳了
@@ -45,6 +53,9 @@ function checkAndNotify() {
                 "uid" => $user["uid"]
             );
         }
+
+        array_unshift($arr, "HB_TIMEOUT");
+        call_user_func_array(array($redis, "zrem"), $arr);
     }
 
     if(count($msgs) > 0) {
@@ -58,6 +69,6 @@ function checkAndNotify() {
 
 
 while(true) {
-    checkAndNotify();
+    checkAndNotify($logger, $queue, $redis);
     sleep(3);
 }
