@@ -186,7 +186,6 @@ class Chat {
             $tags = array();
         }
         $chat["tags"] = $tags;
-        sleep(1);
 
         return $chat;
     }
