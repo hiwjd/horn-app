@@ -24,21 +24,8 @@ class HeartbeatController {
         $interval = $req->getParam("interval", 30);
         $tolerance = $req->getParam("tolerance", 3);
 
-        if(!$this->ci->store->checkTimeout($uid, $interval, $tolerance)) {
-            $arr = array(
-                "type" => "timeout",
-                "oid" => $oid,
-                "uid" => $uid
-            );
-            $arr["mid"] = IdGen::next(); // 先生成消息ID
-            $payload = "#g".json_encode($arr, JSON_UNESCAPED_UNICODE);
-            $this->ci->queue->push(Queue::TOPIC_TIMEOUT, $payload); // 通知超时了
-            return $rsp->withJson(array(
-                "code" => 1,
-                "msg" => "",
-                "interval" => $interval
-            ));
-        }
+        $id = json_encode(array("oid"=>$oid,"uid"=>$uid), JSON_UNESCAPED_UNICODE);
+        $this->ci->redis->zadd("HB_TIMEOUT", time(), $id);
 
         return $rsp->withJson(array(
             "code" => 0,

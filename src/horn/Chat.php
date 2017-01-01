@@ -116,6 +116,16 @@ class Chat {
         $payload = self::getPrefix($type).json_encode($arr, JSON_UNESCAPED_UNICODE);
         $this->queue->push(Queue::TOPIC_MESSAGE, $payload);
 
+        // 更新客服／访客最新的消息时间 用来处理超时问题的
+        if(in_array($type, ["text", "file", "image", "request_chat", "join_chat"])) {
+            $from = $arr["from"];
+            $uid = $from["uid"];
+            $oid = $from["oid"];
+
+            $id = json_encode(array("oid"=>$oid,"uid"=>$uid), JSON_UNESCAPED_UNICODE);
+            $this->redis->zadd("LMT_TIMEOUT", time(), $id);
+        }
+
         return $arr;
     }
 
