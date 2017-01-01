@@ -1,0 +1,10 @@
+[mysql]
+dsn = "mysql:host=localhost;dbname=horn"
+user = "root"
+pass = ""
+
+[redis]
+dsn = "tcp://127.0.0.1:6379?password=xxx"
+
+[nsq]
+nsqdhttp = "http://127.0.0.1:4151"

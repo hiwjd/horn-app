@@ -14,6 +14,11 @@ class Dependency {
     public static function register(App $app) {
         $container = $app->getContainer();
 
+        // 配置
+        $container['config'] = function(ContainerInterface $c) {
+            return parse_ini_file('/home/horn/horn-app/app.ini', true);
+        };
+
         // 日志
         $container['logger'] = function(ContainerInterface $c) {
             $logger = new Logger('app');
@@ -61,17 +66,17 @@ class Dependency {
 
         // mysql读写
         $container['db'] = function(ContainerInterface $c) {
-            $dsn = 'mysql:host=localhost;dbname=horn';
-            $user = 'root';
-            $pass = 'rootMM123!@#';
+            $dsn = $c->config["mysql"]["dsn"];
+            $user = $c->config["mysql"]["user"];
+            $pass = $c->config["mysql"]["pass"];
             return new Horn\Db($c->logger, $dsn, $user, $pass);
         };
 
         // mysql读
         $container['db2'] = function(ContainerInterface $c) {
-            $dsn = 'mysql:host=localhost;dbname=horn';
-            $user = 'root';
-            $pass = 'rootMM123!@#';
+            $dsn = $c->config["mysql"]["dsn"];
+            $user = $c->config["mysql"]["user"];
+            $pass = $c->config["mysql"]["pass"];
             return new Horn\Db($c->logger, $dsn, $user, $pass);
         };
 
@@ -89,7 +94,8 @@ class Dependency {
 
         // nsq队列操作类
         $container['queue'] = function(ContainerInterface $c) {
-            $queue = new Horn\Queue($c->logger, "http://127.0.0.1:4151");
+            $addr = $c->config["nsq"]["nsqdhttp"];
+            $queue = new Horn\Queue($c->logger, $addr);
             return $queue;
         };
 
