@@ -8,3 +8,8 @@ dsn = "tcp://127.0.0.1:6379?password=xxx"
 
 [nsq]
 nsqdhttp = "http://127.0.0.1:4151"
+
+[qiniu]
+accessKey = ""
+secretKey = ""
+bucket = ""

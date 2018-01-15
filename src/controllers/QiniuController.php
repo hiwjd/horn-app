@@ -19,9 +19,10 @@ class QiniuController
 
     public function uptoken(Request $req, Response $rsp, $args)
     {
-        $accessKey = "ck4n4y-ddTGGDGhBgGL9sAogPO8Kr2Ya80GRtgGN";
-        $secretKey = "8e-UIP3UyYZkjaKyYg9U-XxDCj6VS2owtQNlOPbO";
-        $bucket = "f1stxtgl";
+        $qiniuCfg = $this->ci->config["qiniu"];
+        $accessKey = $qiniuCfg["accessKey"];
+        $secretKey = $qiniuCfg["secretKey"];
+        $bucket = $qiniuCfg["bucket"];
 
         $auth = new Auth($accessKey, $secretKey);
 
